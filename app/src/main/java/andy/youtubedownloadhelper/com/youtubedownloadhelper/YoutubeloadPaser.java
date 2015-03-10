@@ -120,6 +120,9 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                             }
                             onProgressUpdate(u);
                             video.setUrl(u);
+                            Integer itag = getItag(u);
+                            video.setType(getType(itag));
+                            video.setVideoType(getVideoType(itag));
                             urls.add(video);
                         }
                     } else if (key.equals("title")) {
@@ -207,7 +210,131 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         int l = text.indexOf(start);
         return text.replace(text.substring(l, end.equals("_end_") ? text.length() : text.indexOf(end, l)), "");
     }
+    private int getItag(String url){
+        String[] parms = url.split("&");
+        for(String p:parms){
+            String key = p.substring(0, p.indexOf('='));
+            String value = p.substring(p.indexOf('=') + 1);
+            if(key.equals("itag")){
+                return Integer.valueOf(value);
+            }
+        }
+        return -1;
+    }
+   private String getType(Integer itag){
+       String result = "NA";
+       switch (itag){
+           case 5:
+               result = "Low Quality, 240p, FLV, 400x240";
+           break;
+           case 17:
+               result = "Low Quality, 144p, 3GP, 0x0";
+           break;
+           case 18:
+               result = "Medium Quality, 360p, MP4, 480x360";
+           break;
+           case 22:
+               result = "High Quality, 720p, MP4, 1280x720";
+           break;
+           case 34:
+               result = "Medium Quality, 360p, FLV, 640x360";
+           break;
+           case 35:
+               result = "Standard Definition, 480p, FLV, 854x480";
+           break;
+           case 36:
+               result = "Low Quality, 240p, 3GP, 0x0";
+           break;
+           case 37:
+               result = "Full High Quality, 1080p, MP4, 1920x1080";
+           break;
+           case 38:
+               result = "Original Definition, MP4, 4096x3072";
+           break;
+           case 43:
+               result = "Medium Quality, 360p, WebM, 640x360";
+           break;
+           case 44:
+               result = "Standard Definition, 480p, WebM, 854x480";
+           break;
+           case 45:
+               result = "High Quality, 720p, WebM, 1280x720";
+           break;
+           case 46:
+               result = "Full High Quality, 1080p, WebM, 1280x720";
+           break;
+           case 82:
+               result = "Medium Quality 3D, 360p, MP4, 640x360";
+           break;
+           case 84:
+               result = "High Quality 3D, 720p, MP4, 1280x720";
+           break;
+           case 100:
+               result = "Medium Quality 3D, 360p, WebM, 640x360";
+           break;
+           case 102:
+               result = "High Quality 3D, 720p, WebM, 1280x720";
+           break;
+       }
+    return result;
 
+   }
+    private String getVideoType(Integer itag){
+        String result = "NA";
+        switch (itag){
+            case 5:
+                result = "fLV";
+                break;
+            case 17:
+                result = "3gp";
+                break;
+            case 18:
+                result = "mp4";
+                break;
+            case 22:
+                result = "mp4";
+                break;
+            case 34:
+                result = "flv";
+                break;
+            case 35:
+                result = "flv";
+                break;
+            case 36:
+                result = "3gp";
+                break;
+            case 37:
+                result = "mp4";
+                break;
+            case 38:
+                result = "mp4";
+                break;
+            case 43:
+                result = "webm";
+                break;
+            case 44:
+                result = "webm";
+                break;
+            case 45:
+                result = "webm";
+                break;
+            case 46:
+                result = "webm";
+                break;
+            case 82:
+                result = "mp4";
+                break;
+            case 84:
+                result = "mp4";
+                break;
+            case 100:
+                result = "webm";
+                break;
+            case 102:
+                result = "webm";
+                break;
+        }
+        return result;
 
-
+    }
 }

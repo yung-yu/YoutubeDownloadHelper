@@ -12,30 +12,29 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
 import android.widget.Toast;
 
-public final class DownloadTask extends AsyncTask<String, String, String> {
+public  class DownloadTask extends AsyncTask<String, String, String> {
 
-    private ProgressDialog dialog;
+    private DownLoadActivity.ViewHolder vh;
 
-    private Context context = null;
+    private Activity context = null;
 
-    public DownloadTask(Context c ){
+    public DownloadTask(Activity c , DownLoadActivity.ViewHolder vh){
         this.context = c;
+        this.vh = vh;
 
-        dialog = new ProgressDialog(context);
     }
     protected void onPreExecute() {
         super.onPreExecute();
-        dialog.setMessage(context.getString(R.string.download_wait));
-        dialog.setIndeterminate(false);
-        dialog.setMax(100);
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        dialog.setCancelable(false);
-        dialog.show();
+        vh.bt.setSelected(true);
+        vh.progressBar.setVisibility(View.VISIBLE);
+
     }
 
 
@@ -48,7 +47,8 @@ public final class DownloadTask extends AsyncTask<String, String, String> {
             URLConnection conection = url.openConnection();
             conection.connect();
             int lenghtOfFile = conection.getContentLength();
-
+            vh.progressBar.setMax(100);
+            vh.progressBar.setProgress(0);
             InputStream input = new BufferedInputStream(url.openStream(),8192);
             File file = new File(params[1],params[2]);
             if(!file.exists())
@@ -60,7 +60,7 @@ public final class DownloadTask extends AsyncTask<String, String, String> {
             while ((count = input.read(data)) != -1) {
                 total += count;
 
-                publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+                onProgressUpdate("" + (int) ((total * 100) / lenghtOfFile));
 
                 output.write(data, 0, count);
             }
@@ -75,16 +75,26 @@ public final class DownloadTask extends AsyncTask<String, String, String> {
 
         return context.getString(R.string.download_success);
     }
+    @Override
+    protected void onProgressUpdate(final String... progress) {
+        super.onProgressUpdate(progress);
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int progressIndex = Integer.valueOf(progress[0]);
+                vh.progressBar.setProgress(progressIndex);
+                vh.bt.setText(context.getString(R.string.progress)+" - "+progressIndex+"/100");
+            }
+        });
 
-    protected void onProgressUpdate(String... progress) {
-        dialog.setProgress(Integer.parseInt(progress[0]));
     }
 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
-
-        dialog.cancel();
+        vh.bt.setSelected(false);
+        vh.bt.setText(s+"--"+vh.video.getType());
+        vh.progressBar.setVisibility(View.GONE);
         Toast.makeText(context,s,Toast.LENGTH_SHORT).show();
     }
 }
