@@ -44,12 +44,12 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         void onfail(String Message);
     }
 
-    TextView tv;
+
     Activity context;
     ProgressDialog progressBar;
     CallBack callBack;
     public YoutubeloadPaser(Activity context, CallBack callBack){
-        this.tv = tv;
+
         this.context = context;
         this.callBack = callBack;
         progressBar = new ProgressDialog(context);
@@ -156,6 +156,8 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         }
         else if(reference.contains("http://youtu.be")){
             videoId = reference.substring(reference.lastIndexOf("/")+1);
+        }else if(reference.contains("https://youtu.be")){
+            videoId = reference.substring(reference.lastIndexOf("/")+1);
         }
         return videoId;
     }
@@ -222,7 +224,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         return -1;
     }
    private String getType(Integer itag){
-       String result = "NA";
+       String result = "";
        switch (itag){
            case 5:
                result = "Low Quality, 240p, FLV, 400x240";
@@ -280,7 +282,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
 
    }
     private String getVideoType(Integer itag){
-        String result = "NA";
+        String result = "";
         switch (itag){
             case 5:
                 result = "fLV";
