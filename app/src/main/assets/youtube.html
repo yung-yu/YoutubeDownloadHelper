@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tw">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="zh-tw">
+    <title></title>
+  </head>
+  <body lang="zh-tw">
+    <div id='container'>
+      
+      <div id='player'></div>
+      <hr/>
+      <input type='button' class='btn' onClick='playVideo ()' value='開始'/>
+      <input type='button' class='btn' onClick='pauseVideo ()' value='暫停'/>
+      <input type='button' class='btn' onClick='stopVideo ()' value='停止'/>
+      <hr/>
+      <input type='button' class='btn' onClick='subPlaybackRate ()' value='減慢'/>
+      <input type='button' class='btn' onClick='addPlaybackRate ()' value='加快'/>
+      <hr/>
+      <input type='button' class='btn' onClick='add ()' value='大聲'/>
+      <input type='button' class='btn' onClick='sub ()' value='小聲'/>
+      <input type='button' class='btn' onClick='mute ()' value='無聲'/>
+      <input type='button' class='btn' onClick='unMute ()' value='有聲'/>
+
+      <script type="text/javascript">
+          var tag = document.createElement('script');
+              tag.src = "https://www.youtube.com/player_api";
+              var firstScriptTag = document.getElementsByTagName('script')[0];
+              firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+          var player;
+
+          function onYouTubePlayerAPIReady () {
+            player = new YT.Player(
+                'player',
+                {
+                    videoId: ['nIYbbFzesec'],
+                    playerVars: {
+                        rel: 1,
+                        autoplay: 0,
+                        disablekb: 0,
+                        showsearch: 0,
+                        showinfo: 0,
+                        controls: 1,
+                        wmode: 'opaque',
+                        hd: 1,
+                        html5: 1,
+                        iv_load_policy: 3
+                    },
+                    events: {
+                        'onReady'        : function () {},
+                        'onStateChange'  : function () {},
+                        'onError'        : function () {},
+                    }
+                }
+            );
+          }
+
+
+          
+          var playVideo = function () {
+            player.playVideo();
+          },
+          pauseVideo = function () {
+            player.pauseVideo();
+          },
+          stopVideo = function () {
+            player.stopVideo();
+          },
+          add = function () {
+            var volume = player.getVolume() + 10
+            player.setVolume (volume > 100 ? 100 : volume)
+          },
+          sub = function () {
+            var volume = player.getVolume() - 10
+            player.setVolume (volume < 0 ? 0 : volume)
+          },
+          mute = function () {
+            player.mute()
+          },
+          unMute = function () {
+            player.unMute()
+          },
+          addPlaybackRate = function () {
+            var rate = player.getPlaybackRate() + 0.5;
+            player.setPlaybackRate (rate > 2 ? 2 : rate)
+          },
+          subPlaybackRate = function () {
+            var rate = player.getPlaybackRate() - 0.5;
+            player.setPlaybackRate (rate < 0.5 ? 0.5 : rate)
+          };
+          
+      </script>
+    </div>
+  </body>
+</html>

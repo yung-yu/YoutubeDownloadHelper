@@ -161,7 +161,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         }
         return videoId;
     }
-    public boolean isValid(String url) {//kinda pointless lol
+    public boolean isValid(String url) {
         return url.contains("signature=") && url.contains("factor=");
     }
     public  String decode(String s) {
