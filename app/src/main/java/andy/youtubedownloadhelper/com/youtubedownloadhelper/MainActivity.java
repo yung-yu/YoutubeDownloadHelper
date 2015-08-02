@@ -1,39 +1,53 @@
 package andy.youtubedownloadhelper.com.youtubedownloadhelper;
 
-import android.support.v7.app.ActionBarActivity;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.andylibrary.utils.Log;
 
-public class MainActivity extends ActionBarActivity {
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.db.DB;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.list.YoutubeListFragment;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.AndroidUtils;
+import io.realm.Realm;
+
+
+public class MainActivity extends FragmentActivity implements TabLayout.OnTabSelectedListener{
+   TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.setOnTabSelectedListener(this);
+        tabLayout.addTab(tabLayout.newTab().setText("列表"), true);
+        tabLayout.addTab(tabLayout.newTab().setText("播放清單"));
+        tabLayout.addTab(tabLayout.newTab().setText("下載中"));
+        AndroidUtils.startFragment(getSupportFragmentManager(), new YoutubeListFragment(), null, false);
+        String sql = DB.createTable(Youtube.class);
+        Log.d("test :"+sql);
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onTabSelected(TabLayout.Tab tab) {
+            switch (tab.getPosition()){
+                case 0:
+                    AndroidUtils.startFragment(getSupportFragmentManager(),new YoutubeListFragment(),null,false);
+                    break;
+            }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onTabUnselected(TabLayout.Tab tab) {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 }

@@ -1,4 +1,4 @@
-package andy.youtubedownloadhelper.com.youtubedownloadhelper;
+package andy.youtubedownloadhelper.com.youtubedownloadhelper.download;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,17 +6,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +23,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-import java.util.regex.Pattern;
+
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.sharePerferenceHelper;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.Video;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.Youtube;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YoutubeloadPaser;
 
 /**
  * Created by andy on 2015/3/8.
@@ -41,10 +43,18 @@ public class DownLoadActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.download);
         context = this;
         tv_title = (TextView) findViewById(R.id.textView);
         iv_title = (ImageView) findViewById(R.id.imageView);
+        findViewById(R.id.button3).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                DownLoadActivity.this.finish();
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
         video_contain = (LinearLayout) findViewById(R.id.video_contain);
 
 
@@ -147,10 +157,10 @@ public class DownLoadActivity extends Activity {
                 downloadDialog.setPositiveButton(R.string.alert_download, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        sharePerferenceHelper.getIntent(context).setString("path",downloadDialog.getCurrentFilePath());
                         new DownloadTask(DownLoadActivity.this,vh).execute(vh.video.getUrl(),downloadDialog.getCurrentFilePath(),downloadDialog.getCurrentFileName());
                     }
-                })
-                        .setNegativeButton(R.string.alert_cancel,null).create().show();
+                }).setNegativeButton(R.string.alert_cancel, null).create().show();
 
             }
         });

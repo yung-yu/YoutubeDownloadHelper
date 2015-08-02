@@ -1,12 +1,11 @@
-package andy.youtubedownloadhelper.com.youtubedownloadhelper;
+package andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+
+
+import com.andylibrary.utils.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,13 +13,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +26,7 @@ import java.util.List;
 public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
 
     public static final String VIDEO_INFO_URL = "http://www.youtube.com/get_video_info?video_id=";
+    public static final String VIDEO_INFO_PARM = "&asv=2&el=detailpage&hl=en_US";
     public static final ArrayList<String> BAD_KEYS = new ArrayList<String>();
     static{
         BAD_KEYS.add("stereo3d");
@@ -81,16 +77,16 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     @Override
     protected void onProgressUpdate(final String... values) {
         super.onProgressUpdate(values);
-        Log.d("youtubeupdate",values[0]);
+        Log.d(values[0]);
     }
 
     @Override
     protected Youtube doInBackground(String... params) {
         String reference = params[0];
         String videoId = getVideoId(reference);
-        if(videoId==null)
+        if(videoId==null||videoId.isEmpty())
             return null;
-       String url = VIDEO_INFO_URL+videoId;
+       String url = VIDEO_INFO_URL+videoId+VIDEO_INFO_PARM;
         Youtube youtube = new Youtube();
         HttpClient client = new DefaultHttpClient();
         HttpGet get = new HttpGet(url);
@@ -100,6 +96,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() == 200) {
                 Document doc = Jsoup.parse(response.getEntity().getContent(), "utf8", url);
+                Log.d(doc.body().text());
                 String[] Parms = doc.text().split("&");
                 String url_encoded_fmt_stream_map = null;
                 List<Video> urls = new ArrayList<Video>();
@@ -110,35 +107,43 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                     String value = p.substring(p.indexOf('=') + 1);
                     if (key.equals("url_encoded_fmt_stream_map")) {
                         value = decode(value);
-                        for (String u : value.split("url=")) {
+                        for (String videoUrl : value.split("url=")) {
                             Video video = new Video();
-                            String decodeU = decode(u);
-                            u = getCorrectURL(video,decodeU);
+                            String decodeU = decode(videoUrl);
+                            videoUrl = getCorrectURL(video,decodeU);
 
-                            if (!u.startsWith("http") && !isValid(u)) {
+                            if (!videoUrl.toLowerCase().startsWith("http") && !isValid(videoUrl)) {
                                 continue;
                             }
-                            onProgressUpdate(u);
-                            video.setUrl(u);
-                            Integer itag = getItag(u);
-                            video.setType(getType(itag));
-                            video.setVideoType(getVideoType(itag));
-                            urls.add(video);
+                            onProgressUpdate(videoUrl);
+                            video.setUrl(videoUrl);
+                            Integer itag = getItag(videoUrl);
+                            String type = YotubeItag.getVideoType(itag);
+                            String videoType = YotubeItag.getVideoDescribe(itag);
+                            video.setType(videoType);
+                            video.setVideoType(type);
+                            if(type!=null&&videoType!=null&&!type.equals("WEB")
+                                    &&!(videoUrl.isEmpty()||type.isEmpty()||videoType.isEmpty()||itag.equals("-1"))) {
+                                urls.add(video);
+                            }
+
                         }
                     } else if (key.equals("title")) {
                         title = value.replace("+", "%20");
                         title = decode(title);
                         onProgressUpdate(title);
-                    } else if(key.equals("thumbnail_url")){
-                        thumbnail_url = decode(value);
-                        onProgressUpdate(thumbnail_url);
                     }
+                    Log.d("youtube  :" + key +" = "+value);
 
 
                 }
                 youtube.setTitle(title);
+                thumbnail_url = "http://img.youtube.com/vi/"+videoId+"/0.jpg";
                 youtube.setThumbnail_url(thumbnail_url);
-                youtube.setVideoList(urls);
+                if(urls.size()==0){
+                    return null;
+                }
+                 youtube.setVideoList(urls);
                 return youtube;
             }
         }catch (IOException e){
@@ -148,17 +153,21 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     }
     public String getVideoId(String reference){
         String videoId = null;
-        Log.d("youtube","reference : "+reference);
+        Log.d("reference : "+reference);
         if(reference.startsWith("https://www.youtube.com/watch?v=")){
             videoId = reference.substring("https://www.youtube.com/watch?v=".length());
         }else if(reference.startsWith("https://m.youtube.com/watch?v=")){
             videoId = reference.substring("https://m.youtube.com/watch?v=".length());
         }
-        else if(reference.contains("http://youtu.be")){
+        else if(reference.contains("http://youtu.be/")){
             videoId = reference.substring(reference.lastIndexOf("/")+1);
-        }else if(reference.contains("https://youtu.be")){
+        }else if(reference.contains("https://youtu.be/")){
             videoId = reference.substring(reference.lastIndexOf("/")+1);
         }
+        if(videoId.contains("&")){
+            videoId = videoId.substring(0,videoId.indexOf("&"));
+        }
+        Log.d("videoId : "+videoId);
         return videoId;
     }
     public boolean isValid(String url) {
@@ -166,7 +175,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     }
     public  String decode(String s) {
         try {
-            return URLDecoder.decode(s, "UTF-8");
+            return URLDecoder.decode(s, "utf8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -218,125 +227,16 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
             String key = p.substring(0, p.indexOf('='));
             String value = p.substring(p.indexOf('=') + 1);
             if(key.equals("itag")){
-                return Integer.valueOf(value);
+                try {
+                    return Integer.valueOf(value);
+                }catch (NumberFormatException e){
+                    Log.exception(e);
+                    break;
+                }
             }
         }
         return -1;
     }
-   private String getType(Integer itag){
-       String result = "";
-       switch (itag){
-           case 5:
-               result = "Low Quality, 240p, FLV, 400x240";
-           break;
-           case 17:
-               result = "Low Quality, 144p, 3GP, 0x0";
-           break;
-           case 18:
-               result = "Medium Quality, 360p, MP4, 480x360";
-           break;
-           case 22:
-               result = "High Quality, 720p, MP4, 1280x720";
-           break;
-           case 34:
-               result = "Medium Quality, 360p, FLV, 640x360";
-           break;
-           case 35:
-               result = "Standard Definition, 480p, FLV, 854x480";
-           break;
-           case 36:
-               result = "Low Quality, 240p, 3GP, 0x0";
-           break;
-           case 37:
-               result = "Full High Quality, 1080p, MP4, 1920x1080";
-           break;
-           case 38:
-               result = "Original Definition, MP4, 4096x3072";
-           break;
-           case 43:
-               result = "Medium Quality, 360p, WebM, 640x360";
-           break;
-           case 44:
-               result = "Standard Definition, 480p, WebM, 854x480";
-           break;
-           case 45:
-               result = "High Quality, 720p, WebM, 1280x720";
-           break;
-           case 46:
-               result = "Full High Quality, 1080p, WebM, 1280x720";
-           break;
-           case 82:
-               result = "Medium Quality 3D, 360p, MP4, 640x360";
-           break;
-           case 84:
-               result = "High Quality 3D, 720p, MP4, 1280x720";
-           break;
-           case 100:
-               result = "Medium Quality 3D, 360p, WebM, 640x360";
-           break;
-           case 102:
-               result = "High Quality 3D, 720p, WebM, 1280x720";
-           break;
-       }
-    return result;
 
-   }
-    private String getVideoType(Integer itag){
-        String result = "";
-        switch (itag){
-            case 5:
-                result = "fLV";
-                break;
-            case 17:
-                result = "3gp";
-                break;
-            case 18:
-                result = "mp4";
-                break;
-            case 22:
-                result = "mp4";
-                break;
-            case 34:
-                result = "flv";
-                break;
-            case 35:
-                result = "flv";
-                break;
-            case 36:
-                result = "3gp";
-                break;
-            case 37:
-                result = "mp4";
-                break;
-            case 38:
-                result = "mp4";
-                break;
-            case 43:
-                result = "webm";
-                break;
-            case 44:
-                result = "webm";
-                break;
-            case 45:
-                result = "webm";
-                break;
-            case 46:
-                result = "webm";
-                break;
-            case 82:
-                result = "mp4";
-                break;
-            case 84:
-                result = "mp4";
-                break;
-            case 100:
-                result = "webm";
-                break;
-            case 102:
-                result = "webm";
-                break;
-        }
-        return result;
 
-    }
 }

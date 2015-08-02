@@ -1,4 +1,4 @@
-package andy.youtubedownloadhelper.com.youtubedownloadhelper;
+package andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube;
 
 import java.util.List;
 

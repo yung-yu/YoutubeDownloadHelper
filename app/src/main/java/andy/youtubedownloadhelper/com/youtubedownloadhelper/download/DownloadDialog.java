@@ -1,4 +1,4 @@
-package andy.youtubedownloadhelper.com.youtubedownloadhelper;
+package andy.youtubedownloadhelper.com.youtubedownloadhelper.download;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,11 +19,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.andylibrary.utils.Log;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.sharePerferenceHelper;
 
 /**
  * Created by andy on 2015/2/27.
@@ -77,6 +82,7 @@ public class DownloadDialog extends AlertDialog.Builder {
         et_name.setText(fileName);
         iv_back.setOnClickListener(new BackEvent());
         String path =  sharePerferenceHelper.getIntent(context).getString("path",Environment.getExternalStorageDirectory().getAbsolutePath());
+        Log.d("當前檔案位置:"+path);
         updateFile(new File(path));
         bt_addDirc.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -135,24 +141,26 @@ public class DownloadDialog extends AlertDialog.Builder {
     public void updateFile(File file){
 
         fileList.clear();
-        if(file.exists()){
+        if(file.exists()&&file.isDirectory()){
             currentFile = file;
-            tv_path.setText(currentFile.getAbsolutePath());
-            File[] dirs = file.listFiles();
-            if(dirs!=null)
-                for(File item : dirs){
-                    if(item.canRead())
-                        fileList.add(item);
-                }
-            Collections.sort(fileList ,new Comparator<File>() {
-                @Override
-                public int compare(File lhs, File rhs) {
-                    int index1 = lhs.isDirectory()?0:1;
-                    int index2 = rhs.isDirectory()?0:1;
-                    return index1 - index2;
-                }
-            });
+        }else{
+            currentFile = Environment.getExternalStorageDirectory();
         }
+        tv_path.setText(currentFile.getAbsolutePath());
+        File[] dirs = file.listFiles();
+        if(dirs!=null)
+            for(File item : dirs){
+                if(item.canRead()&&item.canWrite()&&!item.getName().startsWith("."))
+                    fileList.add(item);
+            }
+        Collections.sort(fileList ,new Comparator<File>() {
+            @Override
+            public int compare(File lhs, File rhs) {
+                int index1 = lhs.isDirectory()?0:1;
+                int index2 = rhs.isDirectory()?0:1;
+                return index1 - index2;
+            }
+        });
         fileAdapter.notifyDataSetChanged();
     }
     public class BackEvent implements View.OnClickListener{

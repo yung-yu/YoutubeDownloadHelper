@@ -1,4 +1,4 @@
-package andy.youtubedownloadhelper.com.youtubedownloadhelper;
+package andy.youtubedownloadhelper.com.youtubedownloadhelper.download;
 
 /**
  * Created by andy on 2015/2/28.
@@ -13,18 +13,21 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Toast;
 
-public  class DownloadTask extends AsyncTask<String, String, String> {
+import com.andylibrary.utils.Log;
+
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
+
+public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
 
     private DownLoadActivity.ViewHolder vh;
 
     private Activity context = null;
-
+    public final Integer DOWNLOAD_SUCCESS = 0;
+    public final Integer DOWNLOAD_FAIL = 1;
     public DownloadTask(Activity c , DownLoadActivity.ViewHolder vh){
         this.context = c;
         this.vh = vh;
@@ -33,13 +36,14 @@ public  class DownloadTask extends AsyncTask<String, String, String> {
     protected void onPreExecute() {
         super.onPreExecute();
         vh.bt.setSelected(true);
+        vh.bt.setEnabled(false);
         vh.progressBar.setVisibility(View.VISIBLE);
 
     }
 
 
     @Override
-    protected String doInBackground(String... params) {
+    protected Integer doInBackground(String... params) {
         int count;
         String filePath = "";
         try {
@@ -50,6 +54,7 @@ public  class DownloadTask extends AsyncTask<String, String, String> {
             vh.progressBar.setMax(100);
             vh.progressBar.setProgress(0);
             InputStream input = new BufferedInputStream(url.openStream(),8192);
+
             File file = new File(params[1],params[2]);
             if(!file.exists())
                 file.createNewFile();
@@ -57,10 +62,11 @@ public  class DownloadTask extends AsyncTask<String, String, String> {
             OutputStream output = new FileOutputStream(file.getAbsolutePath());
             byte data[] = new byte[1024];
             long total = 0;
+            onProgressUpdate(0);
             while ((count = input.read(data)) != -1) {
                 total += count;
 
-                onProgressUpdate("" + (int) ((total * 100) / lenghtOfFile));
+                onProgressUpdate((int) ((total * 100) / lenghtOfFile));
 
                 output.write(data, 0, count);
             }
@@ -68,33 +74,45 @@ public  class DownloadTask extends AsyncTask<String, String, String> {
             output.close();
             input.close();
         }catch (IOException e) {
-
-            return context.getString(R.string.download_fail)+"\n"+e.toString();
+            Log.exception(e);
+            return DOWNLOAD_FAIL;
 
         }
 
-        return context.getString(R.string.download_success);
+        return DOWNLOAD_SUCCESS;
     }
+    int curP = -1;
     @Override
-    protected void onProgressUpdate(final String... progress) {
+    protected void onProgressUpdate(final Integer... progress) {
         super.onProgressUpdate(progress);
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                int progressIndex = Integer.valueOf(progress[0]);
-                vh.progressBar.setProgress(progressIndex);
-                vh.bt.setText(context.getString(R.string.progress)+" - "+progressIndex+"/100");
-            }
-        });
+        final int progressIndex = progress[0];
+        if(curP!=progressIndex) {
+            curP = progressIndex;
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    vh.progressBar.setProgress(progressIndex);
+                    vh.bt.setText(context.getString(R.string.progress) + " - " + progressIndex + "/100");
+                }
+            });
+
+        }
+
+
 
     }
 
     @Override
-    protected void onPostExecute(String s) {
+    protected void onPostExecute(Integer s) {
         super.onPostExecute(s);
         vh.bt.setSelected(false);
-        vh.bt.setText(s+"--"+vh.video.getType());
+        vh.bt.setText(vh.video.getType());
+        vh.bt.setEnabled(true);
         vh.progressBar.setVisibility(View.GONE);
-        Toast.makeText(context,s,Toast.LENGTH_SHORT).show();
+        if(s.equals(DOWNLOAD_SUCCESS)) {
+            Toast.makeText(context, context.getString(R.string.download_success), Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, context.getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
+        }
     }
 }

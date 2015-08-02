@@ -1,34 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/youtube_download_page_magin">
+    android:layout_height="wrap_content"
+    android:padding="@dimen/youtube_download_page_magin"
+    >
 
-    <ImageView
-        android:layout_width="@dimen/youtube_imageview_width"
-        android:layout_height="@dimen/youtub_imageview_height"
-        android:id="@+id/imageView"
-        android:scaleType="centerCrop"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dip"
+        android:id="@+id/top">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView"
+            android:scaleType="centerCrop"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/imageView"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textColor="@color/material_blue_grey_800"
-        android:textSize="@dimen/youtube_textsize"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:layout_alignBottom="@+id/imageView" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dip"
+            android:id="@+id/textView"
+            android:layout_alignParentBottom="true"
+            android:background="@color/helf_Translucent"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="#fff"
+            android:textSize="18dip"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_alignBottom="@+id/imageView" />
+    </RelativeLayout>
+
+
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="200dip"
         android:id="@+id/scrollView"
-        android:layout_below="@+id/imageView" >
+        android:layout_below="@+id/top"
+        android:fillViewport="false">
 
         <LinearLayout
             android:id="@+id/video_contain"
@@ -38,5 +47,13 @@
 
             </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="結束"
+        android:id="@+id/button3"
+        android:layout_below="@+id/scrollView"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
