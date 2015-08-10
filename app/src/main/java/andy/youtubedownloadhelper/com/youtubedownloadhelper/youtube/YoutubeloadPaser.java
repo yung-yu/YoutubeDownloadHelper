@@ -3,6 +3,7 @@ package andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 
 import com.andylibrary.utils.Log;
@@ -19,6 +20,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
 
 /**
  * Created by andy on 2015/3/8.
@@ -77,29 +81,30 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     @Override
     protected void onProgressUpdate(final String... values) {
         super.onProgressUpdate(values);
-        Log.d(values[0]);
+        //Log.d(values[0]);
     }
 
     @Override
     protected Youtube doInBackground(String... params) {
         String reference = params[0];
-        String videoId = getVideoId(reference);
-        if(videoId==null||videoId.isEmpty())
+        String youtubeId = getVideoId(reference);
+        if(TextUtils.isEmpty(youtubeId))
             return null;
-       String url = VIDEO_INFO_URL+videoId+VIDEO_INFO_PARM;
+        String url = VIDEO_INFO_URL+youtubeId+VIDEO_INFO_PARM;
         Youtube youtube = new Youtube();
+        youtube.setYoutubeUrl(reference);
+        youtube.setYoutubeId(youtubeId);
         HttpClient client = new DefaultHttpClient();
         HttpGet get = new HttpGet(url);
 
-        onProgressUpdate(url);
+        Log.d("youtube  video info :" +url);
         try {
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() == 200) {
                 Document doc = Jsoup.parse(response.getEntity().getContent(), "utf8", url);
-                Log.d(doc.body().text());
                 String[] Parms = doc.text().split("&");
                 String url_encoded_fmt_stream_map = null;
-                List<Video> urls = new ArrayList<Video>();
+                ArrayList<Video> urls = new ArrayList<Video>();
                 String title = null;
                 String thumbnail_url =null;
                 for(String p : Parms){
@@ -110,18 +115,17 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                         for (String videoUrl : value.split("url=")) {
                             Video video = new Video();
                             String decodeU = decode(videoUrl);
-                            videoUrl = getCorrectURL(video,decodeU);
+                            videoUrl = getCorrectURL(decodeU);
 
                             if (!videoUrl.toLowerCase().startsWith("http") && !isValid(videoUrl)) {
                                 continue;
                             }
-                            onProgressUpdate(videoUrl);
-                            video.setUrl(videoUrl);
+                            video.setYoutubeId(youtubeId);
+                            video.setVideoUrl(videoUrl);
                             Integer itag = getItag(videoUrl);
                             String type = YotubeItag.getVideoType(itag);
                             String videoType = YotubeItag.getVideoDescribe(itag);
-                            video.setType(videoType);
-                            video.setVideoType(type);
+                            video.setVideoType(itag);
                             if(type!=null&&videoType!=null&&!type.equals("WEB")
                                     &&!(videoUrl.isEmpty()||type.isEmpty()||videoType.isEmpty()||itag.equals("-1"))) {
                                 urls.add(video);
@@ -131,19 +135,18 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                     } else if (key.equals("title")) {
                         title = value.replace("+", "%20");
                         title = decode(title);
-                        onProgressUpdate(title);
                     }
                     Log.d("youtube  :" + key +" = "+value);
 
 
                 }
                 youtube.setTitle(title);
-                thumbnail_url = "http://img.youtube.com/vi/"+videoId+"/0.jpg";
-                youtube.setThumbnail_url(thumbnail_url);
+                thumbnail_url = "http://img.youtube.com/vi/"+youtubeId+"/0.jpg";
+                youtube.setImgeUrl(thumbnail_url);
                 if(urls.size()==0){
                     return null;
                 }
-                 youtube.setVideoList(urls);
+                youtube.setVideoList(urls);
                 return youtube;
             }
         }catch (IOException e){
@@ -181,7 +184,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         }
         return s;
     }
-    private  String getCorrectURL(Video video,String input) {
+    private  String getCorrectURL(String input) {
         StringBuilder builder = new StringBuilder(input.substring(0, input.indexOf('?') + 1));
         String[] params = input.substring(input.indexOf('?') + 1).split("&");
         List<String> keys = new ArrayList<String>();

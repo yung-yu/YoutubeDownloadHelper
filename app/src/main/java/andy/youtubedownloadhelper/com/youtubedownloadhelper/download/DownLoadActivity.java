@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +16,18 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
+import java.util.ArrayList;
 
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.YoutubeDao;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.sharePerferenceHelper;
-import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.Video;
-import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.Youtube;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YotubeItag;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YoutubeloadPaser;
 
 /**
@@ -49,6 +49,17 @@ public class DownLoadActivity extends Activity {
         tv_title = (TextView) findViewById(R.id.textView);
         iv_title = (ImageView) findViewById(R.id.imageView);
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if(curYoutube!=null)
+                  if(YoutubeDao.getInstance(context).addYoutube(curYoutube)){
+                      Toast.makeText(context,"收藏成功",Toast.LENGTH_SHORT).show();
+                  }else{
+                      Toast.makeText(context,"已加入收藏",Toast.LENGTH_SHORT).show();
+                  }
+            }
+        });
+        findViewById(R.id.button4).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 DownLoadActivity.this.finish();
@@ -75,13 +86,11 @@ public class DownLoadActivity extends Activity {
         if (sharedText != null) {
 
                 new YoutubeloadPaser(this, new YoutubeloadPaser.CallBack(){
-
-
                     @Override
                     public void success(Youtube youtube) {
                         curYoutube = youtube;
                         tv_title.setText(curYoutube.getTitle());
-                        displayImageUrl(iv_title,curYoutube.getThumbnail_url());
+                        displayImageUrl(iv_title, curYoutube.getImgeUrl());
                         showDownloadList(curYoutube.getVideoList());
                     }
 
@@ -125,7 +134,7 @@ public class DownLoadActivity extends Activity {
         }).start();
 
     }
-    private void showDownloadList(List<Video> list){
+    private void showDownloadList(ArrayList<Video> list){
         video_contain.removeAllViews();
         if(list==null||list.size()==0)
             return;
@@ -147,7 +156,7 @@ public class DownLoadActivity extends Activity {
         vh.bt = (Button) vh.convertView.findViewById(R.id.button);
         vh.progressBar = (ProgressBar)vh.convertView.findViewById(R.id.progressBar2);
         vh.video = video;
-        vh.bt.setText(video.getType());
+        vh.bt.setText(YotubeItag.getVideoDescribe(video.getVideoType()));
         vh.bt.setTag(vh);
         vh.bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,7 +167,7 @@ public class DownLoadActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sharePerferenceHelper.getIntent(context).setString("path",downloadDialog.getCurrentFilePath());
-                        new DownloadTask(DownLoadActivity.this,vh).execute(vh.video.getUrl(),downloadDialog.getCurrentFilePath(),downloadDialog.getCurrentFileName());
+                        new DownloadTask(DownLoadActivity.this,vh).execute(vh.video.getVideoUrl(),downloadDialog.getCurrentFilePath(),downloadDialog.getCurrentFileName());
                     }
                 }).setNegativeButton(R.string.alert_cancel, null).create().show();
 

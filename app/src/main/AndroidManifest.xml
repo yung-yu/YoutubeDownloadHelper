@@ -19,6 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".download.DownLoadActivity"
+            android:icon="@drawable/download"
+            android:label="@string/share_name"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:theme="@style/DialogActivityStyle">
             <intent-filter>

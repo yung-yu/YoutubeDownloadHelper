@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.andylibrary.utils.Log;
 
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YotubeItag;
 
 public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
 
@@ -92,21 +93,18 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
                 @Override
                 public void run() {
                     vh.progressBar.setProgress(progressIndex);
-                    vh.bt.setText(context.getString(R.string.progress) + " - " + progressIndex + "/100");
+                    vh.bt.setText(context.getString(R.string.progress) + " - " + progressIndex + " %");
                 }
             });
 
         }
-
-
-
     }
 
     @Override
     protected void onPostExecute(Integer s) {
         super.onPostExecute(s);
         vh.bt.setSelected(false);
-        vh.bt.setText(vh.video.getType());
+        vh.bt.setText(YotubeItag.getVideoDescribe(vh.video.getVideoType()));
         vh.bt.setEnabled(true);
         vh.progressBar.setVisibility(View.GONE);
         if(s.equals(DOWNLOAD_SUCCESS)) {

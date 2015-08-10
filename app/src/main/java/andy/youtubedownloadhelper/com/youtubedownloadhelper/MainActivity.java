@@ -25,11 +25,7 @@ public class MainActivity extends FragmentActivity implements TabLayout.OnTabSel
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.setOnTabSelectedListener(this);
         tabLayout.addTab(tabLayout.newTab().setText("列表"), true);
-        tabLayout.addTab(tabLayout.newTab().setText("播放清單"));
-        tabLayout.addTab(tabLayout.newTab().setText("下載中"));
         AndroidUtils.startFragment(getSupportFragmentManager(), new YoutubeListFragment(), null, false);
-        String sql = DB.createTable(Youtube.class);
-        Log.d("test :"+sql);
     }
 
     @Override

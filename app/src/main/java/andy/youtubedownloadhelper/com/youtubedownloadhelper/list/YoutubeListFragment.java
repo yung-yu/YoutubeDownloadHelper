@@ -2,6 +2,7 @@ package andy.youtubedownloadhelper.com.youtubedownloadhelper.list;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
@@ -46,7 +48,11 @@ public class YoutubeListFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
-
+        if(youtubeAdapter==null){
+            youtubeAdapter = new YoutubeAdapter(activity);
+            recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+            recyclerView.setAdapter(youtubeAdapter);
+        }
     }
 
     @Override
@@ -61,12 +67,27 @@ public class YoutubeListFragment extends Fragment {
     }
 
     public void updateYoutubeList(){
-        if(youtubeAdapter==null){
-            youtubeAdapter = new YoutubeAdapter(activity);
-            recyclerView.setLayoutManager(new LinearLayoutManager(activity));
-            recyclerView.setAdapter(youtubeAdapter);
-        }
-        youtubeAdapter.notifyDataSetChanged();
+        AsyncTask<Void ,Void,ArrayList<Youtube> > task =  new AsyncTask<Void ,Void,ArrayList<Youtube>>(){
+
+            @Override
+            protected ArrayList<Youtube> doInBackground(Void... voids) {
+                return YoutubeDao.getInstance(activity).getYoutubes();
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<Youtube> youtubes) {
+                super.onPostExecute(youtubes);
+                youtubeAdapter.setData(youtubes);
+                youtubeAdapter.notifyDataSetChanged();
+            }
+        };
+        task.execute();
+
     }
 
 
@@ -93,9 +114,9 @@ public class YoutubeListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-//            if(data!=null)
-//                return data.size();
-            return 10;
+            if(data!=null)
+                return data.size();
+            return 0;
         }
         public Youtube getItem(int position){
               if(data!=null&&position<data.size()){
@@ -107,7 +128,7 @@ public class YoutubeListFragment extends Fragment {
         public void onBindViewHolder(MyHolder holder, int position) {
                Youtube item = getItem(position);
                if(item!=null){
-                   ImageManager.getInstance().displayImage(holder.iv_thumbnail,item.getImgeUrl());
+                   ImageManager.getInstance(context).displayImage(holder.iv_thumbnail,item.getImgeUrl());
                    holder.tv_title.setText(item.getTitle());
                }
         }

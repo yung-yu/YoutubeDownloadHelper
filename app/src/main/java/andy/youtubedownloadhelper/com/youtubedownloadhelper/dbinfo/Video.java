@@ -9,15 +9,17 @@ import annotation.db.Table;
  */
 @Table(tableName = "video")
 public class Video  {
-    @Column(name = "youtubeId" ,type = "id primary key AUTOINCREMENT")
+    @Column(name = "Id" ,type = "integer primary key AUTOINCREMENT" , index = 0)
     private int id ;
-    @Column(name = "youtubeId" ,type = "text")
+    @Column(name = "youtubeId" ,type = "text", index = 1)
     private String youtubeId ;
-    @Column(name = "videoType" , type = "integer")
+    @Column(name = "videoUrl" ,type = "text", index = 2)
+    private String videoUrl ;
+    @Column(name = "videoType" , type = "integer", index = 3)
     private int videoType;
-    @Column(name = "localFilePath" , type = "text")
+    @Column(name = "localFilePath" , type = "text", index = 4)
     private String localFilePath;
-    @Column(name = "lastUpdateDate",type = "integer" )
+    @Column(name = "lastUpdateDate",type = "integer", index = 5 )
     private long lastUpdateDate;
 
     public String getYoutubeId() {
@@ -59,5 +61,13 @@ public class Video  {
 
     public void setLastUpdateDate(long lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

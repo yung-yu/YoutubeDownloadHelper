@@ -1,6 +1,8 @@
 package andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo;
 
 
+import java.util.ArrayList;
+
 import annotation.db.Column;
 import annotation.db.Table;
 
@@ -10,20 +12,22 @@ import annotation.db.Table;
 @Table(tableName = "youtube")
 public class Youtube  {
 
-    @Column(name = "youtubeId" ,type = "text primary key")
+    @Column(name = "youtubeId" ,type = "text primary key" , index = 0)
     private String youtubeId;
 
-    @Column(name = "youtubeUrl" ,type = "text")
+    @Column(name = "youtubeUrl" ,type = "text", index = 1)
     private String youtubeUrl;
 
-    @Column(name = "title" ,type = "text")
+    @Column(name = "title" ,type = "text" , index = 2)
     private String title;
 
-    @Column(name = "imgeUrl" ,type = "text")
+    @Column(name = "imgeUrl" ,type = "text" , index = 3)
     private String imgeUrl;
 
-    @Column(name = "lastUpdateDate" ,type = "integer")
+    @Column(name = "lastUpdateDate" ,type = "integer", index = 4)
     private Integer lastUpdateDate;
+
+    private ArrayList<Video> videoList;
 
     public String getYoutubeId() {
         return youtubeId;
@@ -65,5 +69,11 @@ public class Youtube  {
         this.lastUpdateDate = lastUpdateDate;
     }
 
+    public ArrayList<Video> getVideoList() {
+        return videoList;
+    }
 
+    public void setVideoList(ArrayList<Video> videoList) {
+        this.videoList = videoList;
+    }
 }
