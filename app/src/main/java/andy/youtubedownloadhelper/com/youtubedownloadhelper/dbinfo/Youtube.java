@@ -1,8 +1,12 @@
 package andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo;
 
 
+import android.content.Context;
+import android.database.Cursor;
+
 import java.util.ArrayList;
 
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.VideoDao;
 import annotation.db.Column;
 import annotation.db.Table;
 
@@ -28,6 +32,17 @@ public class Youtube  {
     private Integer lastUpdateDate;
 
     private ArrayList<Video> videoList;
+
+   public Youtube(){
+
+   }
+    public Youtube(Cursor cursor){
+        this.setYoutubeId(cursor.getString(0));
+        this.setYoutubeUrl(cursor.getString(1));
+        this.setTitle(cursor.getString(2));
+        this.setImgeUrl(cursor.getString(3));
+        this.setLastUpdateDate(cursor.getInt(4));
+    }
 
     public String getYoutubeId() {
         return youtubeId;

@@ -9,10 +9,7 @@ import java.lang.annotation.Target;
 /**
  * Created by andyli on 2015/8/2.
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
 public @interface Table {
-
     public String tableName() default "className";
 }

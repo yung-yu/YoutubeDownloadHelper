@@ -1,8 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">#E00006</item>
+        <item name="colorPrimaryDark">#790205</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
     </style>
     <style name="DialogActivityStyle" parent="Theme.AppCompat.Dialog">
         <item name="android:windowBackground">@color/helf_Translucent</item>

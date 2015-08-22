@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.andylibrary.utils.Log;
 
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.VideoDao;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YotubeItag;
 
 public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
@@ -57,9 +58,12 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
             InputStream input = new BufferedInputStream(url.openStream(),8192);
 
             File file = new File(params[1],params[2]);
-            if(!file.exists())
-                file.createNewFile();
+            if(file.exists()) {
+                file.delete();
+            }
+            file.createNewFile();
             filePath = file.getAbsolutePath();
+            Log.d("下載儲存位置 :"+filePath);
             OutputStream output = new FileOutputStream(file.getAbsolutePath());
             byte data[] = new byte[1024];
             long total = 0;
@@ -79,7 +83,8 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
             return DOWNLOAD_FAIL;
 
         }
-
+        this.vh.video.setLocalFilePath(filePath);
+        VideoDao.getInstance(context).updateVideo(this.vh.video);
         return DOWNLOAD_SUCCESS;
     }
     int curP = -1;
@@ -104,7 +109,7 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
     protected void onPostExecute(Integer s) {
         super.onPostExecute(s);
         vh.bt.setSelected(false);
-        vh.bt.setText(YotubeItag.getVideoDescribe(vh.video.getVideoType()));
+        vh.bt.setText(YotubeItag.getVideoDescribe(vh.video.getItag()));
         vh.bt.setEnabled(true);
         vh.progressBar.setVisibility(View.GONE);
         if(s.equals(DOWNLOAD_SUCCESS)) {

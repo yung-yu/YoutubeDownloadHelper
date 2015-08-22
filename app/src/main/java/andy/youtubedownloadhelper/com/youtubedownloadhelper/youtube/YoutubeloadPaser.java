@@ -87,6 +87,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     @Override
     protected Youtube doInBackground(String... params) {
         String reference = params[0];
+
         String youtubeId = getVideoId(reference);
         if(TextUtils.isEmpty(youtubeId))
             return null;
@@ -125,9 +126,10 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                             Integer itag = getItag(videoUrl);
                             String type = YotubeItag.getVideoType(itag);
                             String videoType = YotubeItag.getVideoDescribe(itag);
-                            video.setVideoType(itag);
-                            if(type!=null&&videoType!=null&&!type.equals("WEB")
+                            video.setItag(itag);
+                            if(type!=null&&videoType!=null&&!type.equals("WEB")&&!type.equals("FLV")
                                     &&!(videoUrl.isEmpty()||type.isEmpty()||videoType.isEmpty()||itag.equals("-1"))) {
+                               Log.d("video url:"+videoUrl);
                                 urls.add(video);
                             }
 
@@ -136,9 +138,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                         title = value.replace("+", "%20");
                         title = decode(title);
                     }
-                    Log.d("youtube  :" + key +" = "+value);
-
-
                 }
                 youtube.setTitle(title);
                 thumbnail_url = "http://img.youtube.com/vi/"+youtubeId+"/0.jpg";

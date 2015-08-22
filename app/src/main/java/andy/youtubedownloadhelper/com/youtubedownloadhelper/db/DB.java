@@ -13,6 +13,7 @@ import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.SongItem;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
 import annotation.db.Column;
@@ -45,6 +46,7 @@ public class DB {
             try {
                 db.execSQL(createTable(Youtube.class));
                 db.execSQL(createTable(Video.class));
+                db.execSQL(createTable(SongItem.class));
             }catch (Exception e){
                 Log.exception(e);
             }
@@ -110,7 +112,7 @@ public class DB {
                 Field a = fields[i];
                 if(a.isAnnotationPresent(Column.class)){
                     Column col = a.getAnnotation(Column.class);
-                    fieldSql+= col.name()+" "+col.type()+(i==fields.length-1?"":" ,");
+                    fieldSql+= (i==0?"":" ,")+col.name()+" "+col.type();
                 }
             }
             sql += " create table "+tableName+" ( "+fieldSql+" )";

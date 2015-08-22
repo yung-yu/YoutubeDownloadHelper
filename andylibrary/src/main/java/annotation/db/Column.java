@@ -9,9 +9,7 @@ import java.lang.annotation.Target;
 /**
  * Created by andyli on 2015/8/2.
  */
-@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface Column {
     public String name() default "fieldName";
     public String type() default "fieldtype";

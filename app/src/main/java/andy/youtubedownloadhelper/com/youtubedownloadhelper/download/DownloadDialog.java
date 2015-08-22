@@ -3,7 +3,6 @@ package andy.youtubedownloadhelper.com.youtubedownloadhelper.download;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Environment;
 import android.util.TypedValue;
@@ -11,9 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,7 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
-import andy.youtubedownloadhelper.com.youtubedownloadhelper.sharePerferenceHelper;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.Preferences.sharePerferenceHelper;
 
 /**
  * Created by andy on 2015/2/27.

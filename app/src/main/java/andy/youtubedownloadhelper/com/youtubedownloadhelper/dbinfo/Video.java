@@ -1,6 +1,8 @@
 package andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo;
 
 
+import android.database.Cursor;
+
 import annotation.db.Column;
 import annotation.db.Table;
 
@@ -15,13 +17,24 @@ public class Video  {
     private String youtubeId ;
     @Column(name = "videoUrl" ,type = "text", index = 2)
     private String videoUrl ;
-    @Column(name = "videoType" , type = "integer", index = 3)
-    private int videoType;
+    @Column(name = "itag" , type = "integer", index = 3)
+    private int itag;
     @Column(name = "localFilePath" , type = "text", index = 4)
     private String localFilePath;
     @Column(name = "lastUpdateDate",type = "integer", index = 5 )
     private long lastUpdateDate;
 
+    public Video(){
+
+    }
+    public Video(Cursor cursor){
+        this.setId(cursor.getInt(0));
+        this.setYoutubeId(cursor.getString(1));
+        this.setVideoUrl(cursor.getString(2));
+        this.setItag(cursor.getInt(3));
+        this.setLocalFilePath(cursor.getString(4));
+        this.setLastUpdateDate(cursor.getLong(5));
+    }
     public String getYoutubeId() {
         return youtubeId;
     }
@@ -39,12 +52,12 @@ public class Video  {
         this.id = id;
     }
 
-    public int getVideoType() {
-        return videoType;
+    public int getItag() {
+        return itag;
     }
 
-    public void setVideoType(int videoType) {
-        this.videoType = videoType;
+    public void setItag(int videoType) {
+        this.itag = videoType;
     }
 
     public String getLocalFilePath() {

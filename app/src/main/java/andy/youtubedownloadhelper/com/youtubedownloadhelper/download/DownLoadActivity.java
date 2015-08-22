@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -16,6 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.andylibrary.utils.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -26,7 +30,7 @@ import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.YoutubeDao;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
-import andy.youtubedownloadhelper.com.youtubedownloadhelper.sharePerferenceHelper;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.Preferences.sharePerferenceHelper;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YotubeItag;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YoutubeloadPaser;
 
@@ -63,7 +67,6 @@ public class DownLoadActivity extends Activity {
             @Override
             public void onClick(View view) {
                 DownLoadActivity.this.finish();
-                android.os.Process.killProcess(android.os.Process.myPid());
             }
         });
         video_contain = (LinearLayout) findViewById(R.id.video_contain);
@@ -72,37 +75,41 @@ public class DownLoadActivity extends Activity {
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
-
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type)) {
-                handleSendText(intent); // Handle text being sent
-            }
+        Bundle bd  = intent.getExtras();
+        if (type != null&&action!=null&&type.equals("text/plain")&&Intent.ACTION_SEND.equals(action) ) {
+            handleSendText(intent); // Handle text being sent
+        }else if(bd!=null){
+              if(bd.containsKey("youtube")){
+                  youtubePaser(bd.getString("youtube"));
+              }
         }
     }
 
+   public void youtubePaser(String sharedText){
+       if (!TextUtils.isEmpty(sharedText)) {
+           Log.d("youtube :" + sharedText);
+           new YoutubeloadPaser(this, new YoutubeloadPaser.CallBack(){
+               @Override
+               public void success(Youtube youtube) {
+                   curYoutube = youtube;
+                   tv_title.setText(curYoutube.getTitle());
+                   displayImageUrl(iv_title, curYoutube.getImgeUrl());
+                   showDownloadList(curYoutube.getVideoList());
+               }
 
+               @Override
+               public void onfail(String Message) {
+                   Toast.makeText(DownLoadActivity.this,Message,Toast.LENGTH_SHORT).show();
+                   finish();
+               }
+           }).execute(sharedText);
+
+
+       }
+   }
     public void handleSendText(Intent intent) {
-        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-        if (sharedText != null) {
+        youtubePaser(intent.getStringExtra(Intent.EXTRA_TEXT));
 
-                new YoutubeloadPaser(this, new YoutubeloadPaser.CallBack(){
-                    @Override
-                    public void success(Youtube youtube) {
-                        curYoutube = youtube;
-                        tv_title.setText(curYoutube.getTitle());
-                        displayImageUrl(iv_title, curYoutube.getImgeUrl());
-                        showDownloadList(curYoutube.getVideoList());
-                    }
-
-                    @Override
-                    public void onfail(String Message) {
-                        Toast.makeText(DownLoadActivity.this,Message,Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }).execute(sharedText);
-
-
-        }
     }
 
     private void  displayImageUrl(final ImageView iv, final String imageUrl)
@@ -156,13 +163,13 @@ public class DownLoadActivity extends Activity {
         vh.bt = (Button) vh.convertView.findViewById(R.id.button);
         vh.progressBar = (ProgressBar)vh.convertView.findViewById(R.id.progressBar2);
         vh.video = video;
-        vh.bt.setText(YotubeItag.getVideoDescribe(video.getVideoType()));
+        vh.bt.setText(YotubeItag.getVideoDescribe(video.getItag()));
         vh.bt.setTag(vh);
         vh.bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final ViewHolder vh = (ViewHolder) v.getTag();
-                final DownloadDialog downloadDialog =  new DownloadDialog(context, curYoutube.getTitle()+"."+vh.video.getVideoType());
+                final DownloadDialog downloadDialog =  new DownloadDialog(context, curYoutube.getTitle()+"."+YotubeItag.getVideoType(vh.video.getItag()));
                 downloadDialog.setPositiveButton(R.string.alert_download, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -175,6 +182,5 @@ public class DownLoadActivity extends Activity {
         });
         return vh;
     }
-
 
 }
