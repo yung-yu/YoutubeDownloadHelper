@@ -214,7 +214,8 @@ public class YoutubeListFragment extends Fragment {
                    ImageManager.getInstance(context).displayImage(holder.iv_thumbnail, item.getImgeUrl());
                    holder.tv_title.setText(item.getTitle());
                    holder.setPostion(position);
-                   if(PlayerManager.getInstance(context).getCurrentSongItem().getYoutubeId().equals(item.getYoutubeId())){
+                   if(PlayerManager.getInstance(context).getCurrentSongItem()!=null
+                           &&PlayerManager.getInstance(context).getCurrentSongItem().getYoutubeId().equals(item.getYoutubeId())){
                        holder.pointer.setVisibility(View.VISIBLE);
                    }else{
                        holder.pointer.setVisibility(View.GONE);
