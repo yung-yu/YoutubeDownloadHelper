@@ -25,9 +25,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/imageView2"
                 android:src="@mipmap/ic_launcher"
-                android:layout_marginRight="3dip"
-                android:layout_marginTop="3dip"
-                android:layout_marginBottom="3dip"
+                android:layout_margin="3dip"
                 android:layout_toRightOf="@+id/imageView8"
                 android:layout_toEndOf="@+id/imageView8" />
 

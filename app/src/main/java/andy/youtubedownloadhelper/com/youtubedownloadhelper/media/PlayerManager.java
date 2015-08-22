@@ -82,6 +82,7 @@ public class PlayerManager {
             if(index<songList.size()){
                 PlayerPerference.getInstance(context).setIndex(index);
             }else if(index==songList.size()){
+                index=0;
                 PlayerPerference.getInstance(context).setIndex(0);
             }
         }
@@ -93,12 +94,13 @@ public class PlayerManager {
             if(index<songList.size()&&index>=0){
                 PlayerPerference.getInstance(context).setIndex(index);
             }else if(index<0){
+                index=songList.size()-1;
                 PlayerPerference.getInstance(context).setIndex(songList.size()-1);
             }
         }
     }
     public  boolean isLoop(){
-        return mediaPlayer !=null&& mediaPlayer.isLooping()?true:false;
+        return true;
     }
     public  boolean isPlay(){
         try {

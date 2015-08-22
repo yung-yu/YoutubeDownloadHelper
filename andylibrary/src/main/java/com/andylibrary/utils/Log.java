@@ -82,11 +82,12 @@ public class Log {
             return;
         }
         try {
-            String msg = getProcess()+exc.toString();
+            String process = getProcess();
+            String msg = process+exc.toString();
             android.util.Log.e(TAG, msg);
-            getLogger().warning(EXCEPTION_START);
+            getLogger().warning(process+EXCEPTION_START);
             getLogger().warning(msg);
-            getLogger().warning(EXCEPTION_END);
+            getLogger().warning(process+EXCEPTION_END);
         }catch (Exception e){
             android.util.Log.e(TAG,e.toString());
         }

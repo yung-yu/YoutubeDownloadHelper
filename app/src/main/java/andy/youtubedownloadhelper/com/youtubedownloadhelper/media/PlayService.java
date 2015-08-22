@@ -78,6 +78,11 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (player != null) {
+            player.stop();
+            player.release();
+            player = null;
+        }
     }
     public boolean requestFocus() {
         int result = mAm.requestAudioFocus(this,
@@ -116,6 +121,7 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                     player = new MediaPlayer();
                     SongItem song = PlayerManager.getInstance(context).getCurrentSongItem();
                     if(song!=null){
+                        Log.d("play song :"+song.getName());
                         if(song.isLocal()){
                             if(!TextUtils.isEmpty(song.getFile())){
                                 player.setDataSource(context,Uri.parse(song.getFile()));
@@ -187,7 +193,19 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         Log.d("onCompletion ");
-        AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_COMPLETED);
+        if(PlayerManager.getInstance(context).isLoop()){
+            if (player != null) {
+                player.stop();
+                player.release();
+                player = null;
+            }
+            PlayerManager.getInstance(context).nextSong();
+            if(!changeSong()){
+                AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+            }
+        }else{
+            AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_COMPLETED);
+        }
     }
 
     @Override

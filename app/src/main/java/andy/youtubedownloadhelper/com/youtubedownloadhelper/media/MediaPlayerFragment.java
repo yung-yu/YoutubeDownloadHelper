@@ -233,7 +233,8 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                                 mTimerTask.cancel();
                             play.setEnabled(true);
                             play.setImageResource(R.drawable.player_play);
-                        }                        break;
+                        }
+                        break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_ERROR:
                         Log.d("MEDIAPLAYER_PLAYBACK_ERROR");
                         openUI();

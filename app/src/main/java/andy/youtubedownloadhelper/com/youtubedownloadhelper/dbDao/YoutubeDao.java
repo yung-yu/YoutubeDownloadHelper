@@ -85,6 +85,7 @@ public class YoutubeDao {
         DB db = new DB(context);
         db.getWriteDateBase().delete("youtube","youtubeId = \""+youtubeId+"\"",null);
         VideoDao.getInstance(context).deleteVideos(youtubeId);
+        SongItemDao.getInstance(context).clear(youtubeId);
     }
     public Youtube getYoutube(String youtubeId){
         DB db = new DB(context);
