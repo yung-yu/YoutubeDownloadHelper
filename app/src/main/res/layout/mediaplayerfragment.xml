@@ -1,85 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:orientation="vertical"
     >
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="130dip"
+       android:padding="15dip"
+       android:background="@drawable/mediaplayer_bg">
+       <ImageView
+           android:layout_width="50dip"
+           android:layout_height="50dip"
+           android:id="@+id/imageView4"
+           android:src="@drawable/player_play"
+           android:layout_alignParentBottom="true"
+           android:layout_toLeftOf="@+id/imageView5"
+           android:layout_toStartOf="@+id/imageView5" />
 
-    <ImageView
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:id="@+id/imageView4"
-        android:src="@drawable/player_play"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/imageView5"
-        android:layout_toStartOf="@+id/imageView5" />
+       <ImageView
+           android:layout_width="50dip"
+           android:layout_height="50dip"
+           android:id="@+id/imageView5"
 
-    <ImageView
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:id="@+id/imageView5"
+           android:src="@drawable/player_stop"
+           android:layout_alignTop="@+id/imageView4"
+           android:layout_toLeftOf="@+id/imageView6"
+           android:layout_toStartOf="@+id/imageView6" />
+       <ImageView
+           android:layout_width="50dip"
+           android:layout_height="50dip"
+           android:id="@+id/imageView6"
+           android:src="@drawable/go_previous_black"
+           android:layout_alignTop="@+id/imageView5"
+           android:layout_toLeftOf="@+id/imageView7"
+           android:layout_toStartOf="@+id/imageView7" />
+       <ImageView
+           android:layout_width="50dip"
+           android:layout_height="50dip"
+           android:id="@+id/imageView7"
+           android:src="@drawable/go_next_black"
+           android:layout_alignTop="@+id/imageView6"
+           android:layout_alignParentRight="true"
+           android:layout_alignParentEnd="true" />
 
-        android:src="@drawable/player_stop"
-        android:layout_alignTop="@+id/imageView4"
-        android:layout_toLeftOf="@+id/imageView6"
-        android:layout_toStartOf="@+id/imageView6" />
-    <ImageView
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:id="@+id/imageView6"
-        android:src="@drawable/go_previous_black"
-        android:layout_alignTop="@+id/imageView5"
-        android:layout_toLeftOf="@+id/imageView7"
-        android:layout_toStartOf="@+id/imageView7" />
-    <ImageView
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:id="@+id/imageView7"
-        android:src="@drawable/go_next_black"
-        android:layout_alignTop="@+id/imageView6"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+       <SeekBar
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:id="@+id/seekBar"
+           android:layout_above="@+id/imageView4"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentStart="true"
+           android:layout_alignParentRight="true"
+           android:layout_alignParentEnd="true"
+           android:layout_below="@+id/maxtime" />
 
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/seekBar"
-        android:layout_above="@+id/imageView4"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true" />
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:textAppearance="?android:attr/textAppearanceLarge"
+           android:text="請點擊播放"
+           android:id="@+id/textView3"
+           android:marqueeRepeatLimit="marquee_forever"
+           android:ellipsize="marquee"
+           android:textColor="#000"
+           android:textSize="20dip"
+           android:gravity="center"
+           android:singleLine="true"
+           android:layout_alignParentBottom="true"
+           android:layout_toLeftOf="@+id/imageView4"
+           android:layout_toStartOf="@+id/imageView4"
+           android:layout_alignTop="@+id/imageView4" />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/donwloadProgressBar"
-        android:layout_above="@+id/imageView4"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:max="100"
-        android:layout_alignParentTop="true" />
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textAppearance="?android:attr/textAppearanceMedium"
+           android:textColor="#000"
+           android:id="@+id/maxtime"
+           android:layout_alignBaseline="@+id/curtime"
+           android:layout_alignBottom="@+id/curtime"
+           android:layout_alignRight="@+id/imageView7"
+           android:layout_alignEnd="@+id/imageView7" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="請點擊播放"
-        android:id="@+id/textView3"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:ellipsize="marquee"
-        android:textColor="#000"
-        android:textSize="20dip"
-        android:gravity="center"
-        android:singleLine="true"
-        android:layout_toLeftOf="@+id/imageView4"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/imageView4"
-        android:layout_alignBottom="@+id/imageView4" />
-
-</RelativeLayout>
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textAppearance="?android:attr/textAppearanceMedium"
+           android:textColor="#000"
+           android:id="@+id/curtime"
+           android:layout_alignParentTop="true"
+           android:layout_alignLeft="@+id/seekBar"
+           android:layout_alignStart="@+id/seekBar" />
+   </RelativeLayout>
+</LinearLayout>

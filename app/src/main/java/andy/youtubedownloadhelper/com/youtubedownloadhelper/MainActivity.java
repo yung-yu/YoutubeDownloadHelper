@@ -22,7 +22,7 @@ import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.AndroidUtils;
 
 
 public class MainActivity extends AppCompatActivity {
-   Toolbar toolbar;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        AndroidUtils.startFragment(getSupportFragmentManager(), R.id.container, YoutubeListFragment.class, null, false);
-        AndroidUtils.startFragment(getSupportFragmentManager(), R.id.playerconatainer, MediaPlayerFragment.class, null, false);
+        AndroidUtils.startFragment(getSupportFragmentManager(), R.id.container, YoutubeListFragment.class, null);
+        AndroidUtils.startFragment(getSupportFragmentManager(), R.id.playerconatainer, MediaPlayerFragment.class, null);
 
     }
 
@@ -54,29 +54,22 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
-    }
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(event.getAction() == KeyEvent.KEYCODE_BACK){
-            Log.d("onKeyDown back");
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
             new AlertDialog.Builder(this)
                     .setMessage("是否要離開")
                     .setNegativeButton("確定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             MainActivity.this.stopService(new Intent(MainActivity.this, PlayService.class));
+                            android.os.Process.killProcess(android.os.Process.myPid());
                             finish();
                         }
                     })
                     .setPositiveButton("取消",null)
                     .create().show();
-            return true;
+        } else {
+            getFragmentManager().popBackStack();
         }
-        return super.onKeyDown(keyCode, event);
     }
+
 }

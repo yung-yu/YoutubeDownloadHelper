@@ -30,7 +30,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.andylibrary.utils.Log;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -52,12 +55,13 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
     Messenger messenger;
     boolean mBound;
     ImageView play , stop, next,previous;
-    ProgressBar downloadProgressBar;
     PlayActionReciver playActionReciver;
     SeekBar playSeekBar;
     TimerTask mTimerTask;
     boolean isChanging = false;
     TextView title;
+    TextView curTime;
+    TextView maxTime;
     @Override
     public void onAttach(Activity activity) {
         Log.d("MediaPlayerFragment onAttach");
@@ -80,8 +84,8 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
         next  = (ImageView) view.findViewById(R.id.imageView7);
         playSeekBar = (SeekBar) view.findViewById(R.id.seekBar);
         title = (TextView) view.findViewById(R.id.textView3);
-        downloadProgressBar = (ProgressBar) view.findViewById(R.id.donwloadProgressBar);
-
+        curTime = (TextView) view.findViewById(R.id.curtime);
+        maxTime = (TextView) view.findViewById(R.id.maxtime);
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,6 +149,10 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
         playSeekBar.setEnabled(true);
     }
     public void trackerSong(){
+        playSeekBar.setMax(PlayerManager.getInstance(activity).getMediaPlayer().getDuration());
+        playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
+        curTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition()));
+        maxTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getDuration()));
         Timer mTimer = new Timer();
         if(mTimerTask!=null)
             mTimerTask.cancel();
@@ -153,11 +161,25 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
             public void run() {
                 if(isChanging)
                     return;
-                if(PlayerManager.getInstance(activity).isPlay())
+                if(PlayerManager.getInstance(activity).isPlay()) {
                     playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
+                   activity.runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           curTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition()));
+                       }
+                   });
+
+                }
             }
         };
-        mTimer.schedule(mTimerTask, 0, 10);
+        mTimer.schedule(mTimerTask, 0, 1000);
+    }
+    public void stopTrackSong(){
+        if(mTimerTask!=null)
+            mTimerTask.cancel();
+        curTime.setText(getTimeStr(0));
+        playSeekBar.setProgress(0);
     }
     @Override
     public void onStart() {
@@ -171,8 +193,7 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
     @Override
     public void onStop() {
         super.onStop();
-        if(mTimerTask!=null)
-             mTimerTask.cancel();
+        stopTrackSong();
         if(playActionReciver!=null)
              LocalBroadcastManager.getInstance(activity).unregisterReceiver(playActionReciver);
     }
@@ -205,8 +226,6 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                 switch (cmd) {
                     case SystemContent.MEDIAPLAYER_START:
                         Log.d("MEDIAPLAYER_START");
-                        playSeekBar.setMax(PlayerManager.getInstance(activity).getMediaPlayer().getDuration());
-                        playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
                         openUI();
                         play.setImageResource(R.drawable.player_pause);
                         title.setText(PlayerManager.getInstance(activity).getCurrentSongItem().getName());
@@ -220,19 +239,15 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                         break;
                     case SystemContent.MEDIAPLAYER_STOP:
                         Log.d("MEDIAPLAYER_STOP");
-                        if(mTimerTask!=null)
-                            mTimerTask.cancel();
-                        playSeekBar.setProgress(0);
+                        stopTrackSong();
                         openUI();
                         play.setImageResource(R.drawable.player_play);
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_COMPLETED:
                         Log.d("MEDIAPLAYER_PLAYBACK_COMPLETED");
+                        stopTrackSong();
                         if(!PlayerManager.getInstance(activity).isLoop()) {
-                            if(mTimerTask!=null)
-                                mTimerTask.cancel();
-                            play.setEnabled(true);
-                            play.setImageResource(R.drawable.player_play);
+                            openUI();
                         }
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_ERROR:
@@ -242,13 +257,19 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_PREPARED:
                         Log.d("MEDIAPLAYER_PLAYBACK_PREPARED");
+
                         openUI();
                         play.setImageResource(R.drawable.player_pause);
+                        title.setText(PlayerManager.getInstance(activity).getCurrentSongItem().getName());
+                        title.setSelected(true);
+                        trackerSong();
                         break;
                 }
 
             }
         }
     }
-
+    public String getTimeStr(int misScond){
+        return new SimpleDateFormat("mm:ss").format(new Date(misScond));
+    }
 }

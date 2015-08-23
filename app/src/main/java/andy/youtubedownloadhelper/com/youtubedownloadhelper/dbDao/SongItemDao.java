@@ -35,7 +35,7 @@ public class SongItemDao {
     public ArrayList<SongItem> getSongList(){
             DB db = new DB(context);
         ArrayList<SongItem> songlist = new ArrayList<>();
-        Cursor cursor = db.getReadableDatabase().query("song" ,null,null,null,null,null,null );
+        Cursor cursor = db.getReadableDatabase().query("song" ,null,null,null,null,null,"lastUpdateDate DESC" );
         for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()){
             songlist.add(new SongItem(cursor));
         }

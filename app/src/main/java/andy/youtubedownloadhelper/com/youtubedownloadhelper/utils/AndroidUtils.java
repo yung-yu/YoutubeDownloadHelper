@@ -43,7 +43,22 @@ public class AndroidUtils {
          Log.exception(e);
      }
     }
+    public static void startFragment(FragmentManager fm,int weightId,Class<? extends Fragment> cls,Bundle bundle){
+        try {
+            Fragment  f = cls.newInstance();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(weightId, f, cls.getName());
+                ft.addToBackStack(null);
 
+            if (bundle != null)
+                f.setArguments(bundle);
+            ft.commit();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.exception(e);
+        }
+    }
     public static void finish(FragmentManager fm){
         try{
             if(fm!=null)

@@ -14,7 +14,9 @@
         android:id="@+id/cardView"
         android:padding="5dip"
         android:layout_margin="5dp"
-        app:cardElevation="3dip"
+        app:cardElevation="5dip"
+        app:contentPadding="5dip"
+        app:cardCornerRadius="5dip"
         >
         <RelativeLayout
             android:layout_width="match_parent"

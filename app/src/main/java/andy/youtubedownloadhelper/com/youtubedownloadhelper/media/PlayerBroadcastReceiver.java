@@ -53,6 +53,11 @@ public class PlayerBroadcastReceiver extends BroadcastReceiver {
                     it.putExtras(bd);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(it);
                     break;
+                case SystemContent.MEDIAPLAYER_CHANGESONG:
+                    Log.d("MEDIAPLAYER_CHANGESONG");
+                    it.putExtras(bd);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(it);
+                    break;
             }
         }
     }

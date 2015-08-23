@@ -110,42 +110,26 @@ public class YoutubeListFragment extends Fragment {
             if(bd!=null) {
                 int cmd = bd.getInt(PlayerBroadcastReceiver.BUNDLEKEY_PLAYERCMD);
                 switch (cmd) {
-                    case SystemContent.MEDIAPLAYER_START:
-                        Log.d("MEDIAPLAYER_START");
+                    case SystemContent.MEDIAPLAYER_CHANGESONG:
+                        Log.d("MEDIAPLAYER_CHANGESONG");
                         if(youtubeAdapter!=null)
                             youtubeAdapter.notifyDataSetChanged();
                         youtubeAdapter.notifyItem();
                         break;
-                    case SystemContent.MEDIAPLAYER_PAUSE:
-                        Log.d("MEDIAPLAYER_PAUSE");
-                        break;
-                    case SystemContent.MEDIAPLAYER_STOP:
-                        Log.d("MEDIAPLAYER_STOP");
 
-                        break;
-                    case SystemContent.MEDIAPLAYER_PLAYBACK_COMPLETED:
-                        Log.d("MEDIAPLAYER_PLAYBACK_COMPLETED");
-
-                        break;
-                    case SystemContent.MEDIAPLAYER_PLAYBACK_ERROR:
-                        Log.d("MEDIAPLAYER_PLAYBACK_ERROR");
-                        break;
-                    case SystemContent.MEDIAPLAYER_PLAYBACK_PREPARED:
-                        Log.d("MEDIAPLAYER_PLAYBACK_PREPARED");
-                        break;
                 }
             }
         }
     }
     public void updateYoutubeList(){
-        AsyncTask<Void ,Void,ArrayList<Youtube> > task =  new AsyncTask<Void ,Void,ArrayList<Youtube>>(){
+        AsyncTask<Void ,Void,ArrayList<SongItem> > task =  new AsyncTask<Void ,Void,ArrayList<SongItem>>(){
 
             @Override
-            protected ArrayList<Youtube> doInBackground(Void... voids) {
+            protected ArrayList<SongItem> doInBackground(Void... voids) {
                 ArrayList<Youtube> list = YoutubeDao.getInstance(activity).getYoutubes();
                 SongItemDao.getInstance(activity).addSongItems(list);
                 PlayerManager.getInstance(activity).setSongList(SongItemDao.getInstance(activity).getSongList());
-                return list;
+                return PlayerManager.getInstance(activity).getSongList();
             }
 
             @Override
@@ -154,7 +138,7 @@ public class YoutubeListFragment extends Fragment {
             }
 
             @Override
-            protected void onPostExecute(ArrayList<Youtube> youtubes) {
+            protected void onPostExecute(ArrayList<SongItem> youtubes) {
                 super.onPostExecute(youtubes);
                 youtubeAdapter.setData(youtubes);
                 youtubeAdapter.notifyDataSetChanged();
@@ -169,11 +153,11 @@ public class YoutubeListFragment extends Fragment {
     private  class YoutubeAdapter extends RecyclerView.Adapter<MyHolder>{
         Context context;
 
-        public List<Youtube> getData() {
+        public List<SongItem> getData() {
             return data;
         }
 
-        public void setData(List<Youtube> data) {
+        public void setData(List<SongItem> data) {
             this.data = data;
         }
 
@@ -185,7 +169,7 @@ public class YoutubeListFragment extends Fragment {
                 }
             }
         }
-        List<Youtube> data;
+        List<SongItem> data;
         public YoutubeAdapter(Context context){
             this.context = context;
         }
@@ -201,7 +185,7 @@ public class YoutubeListFragment extends Fragment {
                 return data.size();
             return 0;
         }
-        public Youtube getItem(int position){
+        public SongItem getItem(int position){
               if(data!=null&&position<data.size()){
                   return data.get(position);
               }
@@ -209,10 +193,10 @@ public class YoutubeListFragment extends Fragment {
         }
         @Override
         public void onBindViewHolder(MyHolder holder, int position) {
-               Youtube item = getItem(position);
+            SongItem item = getItem(position);
                if(item!=null) {
-                   ImageManager.getInstance(context).displayImage(holder.iv_thumbnail, item.getImgeUrl());
-                   holder.tv_title.setText(item.getTitle());
+                   ImageManager.getInstance(context).displayImage(holder.iv_thumbnail, "http://img.youtube.com/vi/"+item.getYoutubeId()+"/0.jpg");
+                   holder.tv_title.setText(item.getName());
                    holder.setPostion(position);
                    if(PlayerManager.getInstance(context).getCurrentSongItem()!=null
                            &&PlayerManager.getInstance(context).getCurrentSongItem().getYoutubeId().equals(item.getYoutubeId())){
@@ -269,7 +253,7 @@ public class YoutubeListFragment extends Fragment {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if (youtubeAdapter == null)
                                 return;
-                            Youtube item;
+                            SongItem item;
                             item = youtubeAdapter.getItem(getPostion());
                             Intent it;
                             if (item != null)

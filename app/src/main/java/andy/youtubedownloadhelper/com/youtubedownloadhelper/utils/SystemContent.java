@@ -11,6 +11,7 @@ public class SystemContent {
     public static final int MEDIAPLAYER_PLAYBACK_COMPLETED = 3;
     public static final int MEDIAPLAYER_PLAYBACK_ERROR = 4;
     public static final int MEDIAPLAYER_PLAYBACK_PREPARED = 5;
+    public static final int MEDIAPLAYER_CHANGESONG = 6;
 
     
 }

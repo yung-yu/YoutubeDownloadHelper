@@ -63,6 +63,8 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                 case MEDIAPLAYER_CHANGESONG:
                     if(!changeSong()){
                         AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+                    }else{
+                        AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_CHANGESONG);
                     }
                     break;
             }
