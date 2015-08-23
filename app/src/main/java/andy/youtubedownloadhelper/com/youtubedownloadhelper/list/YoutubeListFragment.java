@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andylibrary.utils.Log;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -144,8 +145,12 @@ public class YoutubeListFragment extends Fragment {
             return false;
         }
     }
-    public void updateYoutubeList(){
 
+    public void updateYoutubeList(){
+        if(!AndroidUtils.isNetworkConnected(activity)){
+            Toast.makeText(activity,"請開啟網路",Toast.LENGTH_SHORT).show();
+           return ;
+        }
         AsyncTask<Void ,Void,ArrayList<SongItem> > task =  new AsyncTask<Void ,Void,ArrayList<SongItem>>(){
 
             @Override
@@ -193,8 +198,12 @@ public class YoutubeListFragment extends Fragment {
                 youtubeAdapter.setData(youtubes);
                 youtubeAdapter.notifyDataSetChanged();
                 youtubeAdapter.notifyItem();
-                if(pd!=null&&pd.isShowing()){
-                    pd.dismiss();
+                try {
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
+                    }
+                }catch (Exception e){
+                    Log.exception(e);
                 }
             }
         };

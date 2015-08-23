@@ -109,6 +109,15 @@ public class AndroidUtils {
         }
     }
 
+   public static boolean isNetWorkOK(Context context){
 
+           ConnectivityManager cm =
+                   (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+           NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+           boolean isConnected = activeNetwork != null &&
+                   activeNetwork.isConnectedOrConnecting();
+           return isConnected;
+   }
 
 }
