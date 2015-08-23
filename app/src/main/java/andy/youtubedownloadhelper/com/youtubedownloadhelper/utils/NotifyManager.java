@@ -40,6 +40,7 @@ public class NotifyManager {
         NotificationManager notificationManager = (NotificationManager)(context.getSystemService(Context.NOTIFICATION_SERVICE));
         remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
         intent = new Intent(context,MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         pendingIntent = PendingIntent.getActivity(context, 0 ,intent , PendingIntent.FLAG_UPDATE_CURRENT);
         remoteView.setImageViewBitmap(R.id.imageView9, bmp);
         remoteView.setTextViewText(R.id.textView5,title);

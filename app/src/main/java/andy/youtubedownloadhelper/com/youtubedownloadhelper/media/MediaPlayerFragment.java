@@ -150,6 +150,8 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
         playSeekBar.setEnabled(true);
     }
     public void trackerSong(){
+        if(PlayerManager.getInstance(activity).getMediaPlayer()==null)
+            return;
         playSeekBar.setMax(PlayerManager.getInstance(activity).getMediaPlayer().getDuration());
         playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
         curTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition()));
