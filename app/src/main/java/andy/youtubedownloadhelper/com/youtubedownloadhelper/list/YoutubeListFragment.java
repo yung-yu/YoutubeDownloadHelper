@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -124,8 +126,7 @@ public class YoutubeListFragment extends Fragment {
                     case SystemContent.MEDIAPLAYER_CHANGESONG:
                         Log.d("MEDIAPLAYER_CHANGESONG");
                         if(youtubeAdapter!=null)
-                            youtubeAdapter.notifyDataSetChanged();
-                        youtubeAdapter.notifyItem();
+                            youtubeAdapter.notifyItem();
                         break;
 
                 }
@@ -197,7 +198,6 @@ public class YoutubeListFragment extends Fragment {
                 super.onPostExecute(youtubes);
                 youtubeAdapter.setData(youtubes);
                 youtubeAdapter.notifyDataSetChanged();
-                youtubeAdapter.notifyItem();
                 try {
                     if (pd != null && pd.isShowing()) {
                         pd.dismiss();
@@ -214,7 +214,7 @@ public class YoutubeListFragment extends Fragment {
 
     private  class YoutubeAdapter extends RecyclerView.Adapter<MyHolder>{
         Context context;
-
+        int focusPostion = -1;
         public List<SongItem> getData() {
             return data;
         }
@@ -229,6 +229,9 @@ public class YoutubeListFragment extends Fragment {
                 if(index<data.size()){
                     recyclerView.scrollToPosition(index);
                 }
+                if(focusPostion!=-1)
+                    notifyItemChanged(focusPostion);
+                notifyItemChanged(index);
             }
         }
         List<SongItem> data;
@@ -262,9 +265,10 @@ public class YoutubeListFragment extends Fragment {
                    holder.setPostion(position);
                    if(PlayerManager.getInstance(context).getCurrentSongItem()!=null
                            &&PlayerManager.getInstance(context).getCurrentSongItem().getYoutubeId().equals(item.getYoutubeId())){
-                       holder.pointer.setVisibility(View.VISIBLE);
+                       focusPostion = position;
+                       holder.view.setBackgroundColor(getResources().getColor(R.color.bt_touch_color));
                    }else{
-                       holder.pointer.setVisibility(View.GONE);
+                       holder.view.setBackgroundColor(Color.WHITE);
                    }
                }
         }
@@ -277,14 +281,15 @@ public class YoutubeListFragment extends Fragment {
         TextView tv_title;
         ImageView iv_thumbnail;
         View view;
-        ImageView pointer;
+        CardView cardView;
         int postion = -1;
 
         public MyHolder(View itemView) {
             super(itemView);
             tv_title = (TextView) itemView.findViewById(R.id.textView2);
             iv_thumbnail = (ImageView) itemView.findViewById(R.id.imageView2);
-            pointer = (ImageView) itemView.findViewById(R.id.imageView8);
+            cardView = (CardView) itemView.findViewById(R.id.cardView);
+            view = itemView;
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
         }

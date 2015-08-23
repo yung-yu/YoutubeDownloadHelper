@@ -238,6 +238,7 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                     case SystemContent.MEDIAPLAYER_PAUSE:
                         Log.d("MEDIAPLAYER_PAUSE");
                         openUI();
+                        stopTrackSong();
                         play.setImageResource(R.drawable.player_play);
                         break;
                     case SystemContent.MEDIAPLAYER_STOP:
@@ -255,11 +256,11 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_ERROR:
                         Log.d("MEDIAPLAYER_PLAYBACK_ERROR");
+                        stopTrackSong();
                         openUI();
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_PREPARED:
                         Log.d("MEDIAPLAYER_PLAYBACK_PREPARED");
-
                         openUI();
                         play.setImageResource(R.drawable.player_pause);
                         title.setText(PlayerManager.getInstance(activity).getCurrentSongItem().getName());

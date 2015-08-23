@@ -61,10 +61,13 @@ public class PlayerManager {
         return index;
     }
     public SongItem getCurrentSongItem(){
-        if(songList!=null){
+        if(songList!=null&&songList.size()>0){
             index =  PlayerPerference.getInstance(context).getIndex();
             if(index<songList.size()){
                 return songList.get(index);
+            }else{
+                setSong(0);
+                return songList.get(0);
             }
         }
         return null;
@@ -75,7 +78,7 @@ public class PlayerManager {
             index++;
             if(index<songList.size()){
                 PlayerPerference.getInstance(context).setIndex(index);
-            }else if(index==songList.size()){
+            }else if(index>=songList.size()){
                 index=0;
                 PlayerPerference.getInstance(context).setIndex(0);
             }
