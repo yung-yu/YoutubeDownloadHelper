@@ -1,16 +1,22 @@
 package andy.youtubedownloadhelper.com.youtubedownloadhelper.utils;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.RemoteViews;
 
 import com.andylibrary.utils.Log;
 
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.MainActivity;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.media.PlayService;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.media.PlayerBroadcastReceiver;
@@ -102,4 +108,7 @@ public class AndroidUtils {
             Log.exception(e);
         }
     }
+
+
+
 }

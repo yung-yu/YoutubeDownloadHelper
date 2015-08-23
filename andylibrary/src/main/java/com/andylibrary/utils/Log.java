@@ -62,7 +62,7 @@ public class Log {
         className = className.substring(className.lastIndexOf(".")+1);
         String methodName =  elements[4].getMethodName();
 
-        return "["+className+"]"+"["+methodName+"]"+"["+elements[4].getLineNumber()+"]-";
+        return "["+Thread.currentThread().getId()+"]"+"["+className+"]"+"["+methodName+"]"+"["+elements[4].getLineNumber()+"]-";
     }
     public static void d(String msg){
         if(!IS_DEBUG){

@@ -19,6 +19,7 @@ import andy.youtubedownloadhelper.com.youtubedownloadhelper.list.YoutubeListFrag
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.media.MediaPlayerFragment;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.media.PlayService;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.AndroidUtils;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.NotifyManager;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             MainActivity.this.stopService(new Intent(MainActivity.this, PlayService.class));
+                            NotifyManager.getInstance().cancelMediaNotification(MainActivity.this);
                             android.os.Process.killProcess(android.os.Process.myPid());
                             finish();
                         }

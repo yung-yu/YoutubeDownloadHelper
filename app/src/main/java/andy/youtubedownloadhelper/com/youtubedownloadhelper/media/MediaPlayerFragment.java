@@ -123,17 +123,18 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
 
         play.setImageResource(PlayerManager.getInstance(activity).isPlay() ? R.drawable.player_pause : R.drawable.player_play);
         playSeekBar.setOnSeekBarChangeListener(this);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         if(PlayerManager.getInstance(activity).isPlay()) {
-            playSeekBar.setMax(PlayerManager.getInstance(activity).getMediaPlayer().getDuration());
-            playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
             title.setText(PlayerManager.getInstance(activity).getCurrentSongItem().getName());
             title.setSelected(true);
             trackerSong();
         }
-
-
     }
+
     public void closeUI(){
         play.setEnabled(false);
         stop .setEnabled(false);
@@ -253,7 +254,6 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                     case SystemContent.MEDIAPLAYER_PLAYBACK_ERROR:
                         Log.d("MEDIAPLAYER_PLAYBACK_ERROR");
                         openUI();
-                        play.setImageResource(R.drawable.player_play);
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_PREPARED:
                         Log.d("MEDIAPLAYER_PLAYBACK_PREPARED");

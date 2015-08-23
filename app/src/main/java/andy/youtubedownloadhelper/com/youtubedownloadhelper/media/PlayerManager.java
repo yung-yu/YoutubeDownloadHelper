@@ -93,6 +93,16 @@ public class PlayerManager {
             }
         }
     }
+    public boolean  setSong(int position){
+        if(songList!=null){
+            if(position<songList.size()&&index!=position){
+                index = position;
+                PlayerPerference.getInstance(context).setIndex(index);
+                return true;
+            }
+        }
+        return false;
+    }
     public  boolean isLoop(){
         return true;
     }

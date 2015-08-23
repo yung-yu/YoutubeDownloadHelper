@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Youtube收藏</string>
+    <string name="app_name">Youtube播放列表</string>
     <string name="share_name">Youtube下載</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_play_All">播放全部</string>

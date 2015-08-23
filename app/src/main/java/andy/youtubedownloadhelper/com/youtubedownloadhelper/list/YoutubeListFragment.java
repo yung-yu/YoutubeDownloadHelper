@@ -2,6 +2,7 @@ package andy.youtubedownloadhelper.com.youtubedownloadhelper.list;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,12 +24,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.andylibrary.utils.Log;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +52,7 @@ import andy.youtubedownloadhelper.com.youtubedownloadhelper.media.PlayerManager;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.AndroidUtils;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.ImageManager;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.SystemContent;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YoutubeloadPaser;
 
 /**
  * Created by andyli on 2015/7/25.
@@ -81,8 +86,15 @@ public class YoutubeListFragment extends Fragment {
             recyclerView.setAdapter(youtubeAdapter);
         }
 
-
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d("YoutubeListFragment onCreate");
+        updateYoutubeList();
+    }
+
     PlayActionReciver playActionReciver;
     @Override
     public void onResume() {
@@ -90,8 +102,6 @@ public class YoutubeListFragment extends Fragment {
         playActionReciver = new PlayActionReciver();
         IntentFilter intentFilter = new IntentFilter(MediaPlayerFragment.MEDIAPLAYER_ACTION);
         LocalBroadcastManager.getInstance(activity).registerReceiver(playActionReciver, intentFilter);
-        Log.d("YoutubeListFragment onResume");
-        updateYoutubeList();
     }
 
     @Override
@@ -121,20 +131,60 @@ public class YoutubeListFragment extends Fragment {
             }
         }
     }
+    public  boolean exists(String URLName){
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+
+            HttpURLConnection con =  (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     public void updateYoutubeList(){
+
         AsyncTask<Void ,Void,ArrayList<SongItem> > task =  new AsyncTask<Void ,Void,ArrayList<SongItem>>(){
 
             @Override
             protected ArrayList<SongItem> doInBackground(Void... voids) {
                 ArrayList<Youtube> list = YoutubeDao.getInstance(activity).getYoutubes();
                 SongItemDao.getInstance(activity).addSongItems(list);
-                PlayerManager.getInstance(activity).setSongList(SongItemDao.getInstance(activity).getSongList());
-                return PlayerManager.getInstance(activity).getSongList();
+                ArrayList<SongItem> data = SongItemDao.getInstance(activity).getSongList();
+                boolean isDeleteItem = false;
+                if(data!=null)
+                    for(SongItem item :data){
+                        if(!exists(item.getUrl())){
+                            YoutubeDao.getInstance(activity).deleteYotube(item.getYoutubeId());
+                            String url = "https://www.youtube.com/watch?v="+item.getYoutubeId();
+                            Youtube youtube = paser.getYoutube(url, item.getYoutubeId());
+                            if(youtube!=null) {
+                                YoutubeDao.getInstance(activity).addYoutube(youtube);
+                                SongItemDao.getInstance(activity).addSongItem(youtube);
+                            }
+                            isDeleteItem = true;
+                        }
+                    }
+                data = SongItemDao.getInstance(activity).getSongList();
+                PlayerManager.getInstance(activity).setSongList(data);
+                if(isDeleteItem){
+                    AndroidUtils.sendToPlayService(activity, null, PlayService.MEDIAPLAYER_STOP);
+                }
+                return data;
             }
-
+            YoutubeloadPaser paser;
+            ProgressDialog pd;
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                paser = new YoutubeloadPaser(activity,null);
+                pd = new ProgressDialog(activity);
+                pd.setMessage("準備播放清單");
+                pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                pd.setCanceledOnTouchOutside(false);
+                pd.show();
             }
 
             @Override
@@ -143,6 +193,9 @@ public class YoutubeListFragment extends Fragment {
                 youtubeAdapter.setData(youtubes);
                 youtubeAdapter.notifyDataSetChanged();
                 youtubeAdapter.notifyItem();
+                if(pd!=null&&pd.isShowing()){
+                    pd.dismiss();
+                }
             }
         };
         task.execute();
@@ -237,9 +290,8 @@ public class YoutubeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-
-
-
+            if(PlayerManager.getInstance(activity).setSong(postion))
+                AndroidUtils.sendToPlayService(activity, null, PlayService.MEDIAPLAYER_CHANGESONG);
         }
         @Override
         public boolean onLongClick(View view) {

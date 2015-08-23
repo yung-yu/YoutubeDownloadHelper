@@ -91,6 +91,11 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         String youtubeId = getVideoId(reference);
         if(TextUtils.isEmpty(youtubeId))
             return null;
+        return getYoutube(reference,youtubeId);
+
+    }
+
+    public  Youtube getYoutube(String reference,String youtubeId){
         String url = VIDEO_INFO_URL+youtubeId+VIDEO_INFO_PARM;
         Youtube youtube = new Youtube();
         youtube.setYoutubeUrl(reference);
@@ -129,7 +134,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                             video.setItag(itag);
                             if(type!=null&&videoType!=null&&!type.equals("WEB")&&!type.equals("FLV")
                                     &&!(videoUrl.isEmpty()||type.isEmpty()||videoType.isEmpty()||itag.equals("-1"))) {
-                               Log.d("video url:"+videoUrl);
+                                Log.d("video url:"+videoUrl);
                                 urls.add(video);
                             }
 

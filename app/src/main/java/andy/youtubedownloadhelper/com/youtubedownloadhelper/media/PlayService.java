@@ -16,9 +16,12 @@ import android.text.TextUtils;
 import android.widget.Toast;
 import com.andylibrary.utils.Log;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.SongItem;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.AndroidUtils;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.NotifyManager;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.SystemContent;
 
 /**
@@ -50,9 +53,19 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
             int cmd = bd.getInt(BUNDLE_CMD);
             switch (cmd){
                 case MEDIAPLAYER_START:
-                    if(!play()){
-                        AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
-                    }
+                    readyPlay(false, new OnReadyPlayCallBack() {
+                        @Override
+                        public void onSuccess(SongItem song, boolean isChangeSong) {
+                            if(!start()){
+                                AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+                            }
+                        }
+
+                        @Override
+                        public void onFailed() {
+                            AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+                        }
+                    });
                     break;
                 case MEDIAPLAYER_PAUSE:
                     pause();
@@ -61,11 +74,22 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                     stop();
                     break;
                 case MEDIAPLAYER_CHANGESONG:
-                    if(!changeSong()){
-                        AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
-                    }else{
-                        AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_CHANGESONG);
-                    }
+                    changeSong(new OnReadyPlayCallBack() {
+                        @Override
+                        public void onSuccess(SongItem song, boolean isChangeSong) {
+                            if(!start()){
+                                AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+                            }else{
+                                AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_CHANGESONG);
+                            }
+                        }
+
+                        @Override
+                        public void onFailed() {
+                            AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+                        }
+                    });
+
                     break;
             }
         }
@@ -100,14 +124,17 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
             AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_START);
         }
     }
-    public boolean changeSong(){
+    public void changeSong(OnReadyPlayCallBack callBack){
         if(player != null&&player.isPlaying()){
             player.reset();
             player.release();
             player = null;
         }
-        return play();
+        readyPlay(true,callBack);
     }
+
+
+
     public void pause() {
         if (player != null && player.isPlaying()) {
             player.pause();
@@ -115,8 +142,24 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
         }
 
     }
+    public interface  OnReadyPlayCallBack{
+        void  onSuccess(SongItem song,boolean isChangeSong);
+        void  onFailed();
+    }
+    public  boolean exists(String URLName){
+        try {
+            HttpURLConnection.setFollowRedirects(false);
 
-    public boolean play() {
+            HttpURLConnection con =  (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean  start(){
         if (requestFocus()) {
             if (player == null) {
                 try {
@@ -148,11 +191,20 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                     player.setOnBufferingUpdateListener(this);
                     player.prepare();
                     PlayerManager.getInstance(context).setMediaPlayer(player);
+                    NotifyManager.getInstance().showMediaNotification(context,
+                            "http://img.youtube.com/vi/"+song.getYoutubeId()+"/0.jpg",
+                            song.getName());
                 } catch (IOException e) {
                     Log.exception(e);
+                    player.reset();
+                    player.release();
+                    player = null;
                     return false;
                 } catch (IllegalStateException e){
                     Log.exception(e);
+                    player.reset();
+                    player.release();
+                    player = null;
                     return false;
                 }
             }
@@ -163,6 +215,24 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
             return true;
         }
         return false;
+    }
+    public void readyPlay(final boolean isChangeSong , final OnReadyPlayCallBack callBack) {
+         new Thread(new Runnable() {
+             @Override
+             public void run() {
+                 SongItem song = PlayerManager.getInstance(context).getCurrentSongItem();
+                 if(song!=null){
+                     if(exists(song.getUrl())) {
+                         if (callBack != null)
+                             callBack.onSuccess(song, isChangeSong);
+                         return;
+                     }
+                 }
+                 if(callBack!=null  )
+                     callBack.onFailed();
+             }
+         }).start();
+
     }
     public void stop() {
         if (player != null) {
@@ -189,7 +259,6 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-        Log.d("onBufferingUpdate :" + i);
     }
 
     @Override
@@ -202,9 +271,21 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                 player = null;
             }
             PlayerManager.getInstance(context).nextSong();
-            if(!changeSong()){
-                AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
-            }
+            changeSong(new OnReadyPlayCallBack() {
+                @Override
+                public void onSuccess(SongItem song, boolean isChangeSong) {
+                    if (!start()) {
+                        AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+                    } else {
+                        AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_CHANGESONG);
+                    }
+                }
+
+                @Override
+                public void onFailed() {
+                    AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_ERROR);
+                }
+            });
         }else{
             AndroidUtils.sendBroadCastToPlayer(context, null, SystemContent.MEDIAPLAYER_PLAYBACK_COMPLETED);
         }
