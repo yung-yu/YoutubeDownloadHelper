@@ -22,12 +22,12 @@ public class PlayerPerference {
     public SharedPreferences getSharedPreferences(){
         return context.getSharedPreferences("PlayerPerference" ,Context.MODE_PRIVATE);
     }
-    public int getIndex(){
-         return getSharedPreferences().getInt("index", 0);
+    public String getId(){
+         return getSharedPreferences().getString("youtubeId", "");
     }
-    public void setIndex(int index){
+    public void setId(String id){
         SharedPreferences.Editor  editor = getSharedPreferences().edit();
-        editor.putInt("index", index);
+        editor.putString("youtubeId", id);
         editor.commit();
     }
 }

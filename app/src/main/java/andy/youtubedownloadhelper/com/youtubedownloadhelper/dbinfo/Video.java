@@ -3,8 +3,9 @@ package andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo;
 
 import android.database.Cursor;
 
-import annotation.db.Column;
-import annotation.db.Table;
+import andy.spiderlibrary.db.Column;
+import andy.spiderlibrary.db.Table;
+
 
 /**
  * Created by andyli on 2015/7/25.

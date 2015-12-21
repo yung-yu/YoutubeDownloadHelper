@@ -6,18 +6,18 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.andylibrary.utils.Log;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import andy.spiderlibrary.db.Column;
+import andy.spiderlibrary.db.Table;
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.SongItem;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
-import annotation.db.Column;
-import annotation.db.Table;
+
 
 /**
  * Created by andyli on 2015/8/1.

@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.text.TextUtils;
 
-import com.andylibrary.utils.Log;
+import andy.spiderlibrary.utils.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +30,9 @@ public class PlayerManager {
 
     private MediaPlayer mediaPlayer;
     private ArrayList<SongItem> songList;
-    private int index = 0;
+
+    private boolean isUpdate = false;
+    private  String youtubeId = "";
     public PlayerManager(Context context) {
         this.context = context;
     }
@@ -57,54 +59,82 @@ public class PlayerManager {
         this.mediaPlayer = mediaPlayer;
     }
 
-    public int  getIndex(){
-        return index;
+
+    public boolean isUpdate() {
+        return isUpdate;
     }
+
+    public void setIsUpdate(boolean isUpdate) {
+        this.isUpdate = isUpdate;
+    }
+
+    public String getYoutubeId() {
+        return youtubeId;
+    }
+
+    public void setYoutubeId(String youtubeId) {
+        this.youtubeId = youtubeId;
+    }
+
     public SongItem getCurrentSongItem(){
         if(songList!=null&&songList.size()>0){
-            index =  PlayerPerference.getInstance(context).getIndex();
-            if(index<songList.size()){
-                return songList.get(index);
+            youtubeId =  PlayerPerference.getInstance(context).getId();
+            if(!TextUtils.isEmpty(youtubeId)) {
+                for (int i = 0; i < songList.size(); i++) {
+                    if (youtubeId.equals(songList.get(i).getYoutubeId())) {
+                        return songList.get(i);
+                    }
+                }
             }else{
-                setSong(0);
+                youtubeId = songList.get(0).getYoutubeId();
+                PlayerPerference.getInstance(context).setId(youtubeId);
                 return songList.get(0);
             }
         }
         return null;
     }
+
     //下一首歌
     public void nextSong(){
         if(songList!=null){
+            int index = -1;
+            for(int i = 0;i<songList.size();i++){
+                if(youtubeId.equals(songList.get(i).getYoutubeId())){
+                    index = i;
+                }
+            }
             index++;
             if(index<songList.size()){
-                PlayerPerference.getInstance(context).setIndex(index);
+                PlayerPerference.getInstance(context).setId(songList.get(index).getYoutubeId());
             }else if(index>=songList.size()){
                 index=0;
-                PlayerPerference.getInstance(context).setIndex(0);
+                PlayerPerference.getInstance(context).setId(songList.get(index).getYoutubeId());
             }
         }
     }
     //上一首歌
     public void preSong(){
         if(songList!=null){
-            index--;
+            int index = -1;
+            for(int i = 0;i<songList.size();i++){
+                if(youtubeId.equals(songList.get(i).getYoutubeId())){
+                    index = i;
+                }
+            }
+            index++;
             if(index<songList.size()&&index>=0){
-                PlayerPerference.getInstance(context).setIndex(index);
+                PlayerPerference.getInstance(context).setId(songList.get(index).getYoutubeId());
             }else if(index<0){
                 index=songList.size()-1;
-                PlayerPerference.getInstance(context).setIndex(songList.size()-1);
+                PlayerPerference.getInstance(context).setId(songList.get(index).getYoutubeId());
             }
         }
     }
-    public boolean  setSong(int position){
-        if(songList!=null){
-            if(position<songList.size()&&index!=position){
-                index = position;
-                PlayerPerference.getInstance(context).setIndex(index);
-                return true;
-            }
-        }
-        return false;
+    public boolean  setSong(String youtubeId){
+       this.youtubeId = youtubeId;
+       PlayerPerference.getInstance(context).setId(youtubeId);
+       return true;
+
     }
     public  boolean isLoop(){
         return true;

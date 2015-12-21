@@ -5,19 +5,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.andylibrary.utils.Log;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.db.DB;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
-import annotation.db.Table;
-import io.realm.Realm;
-import io.realm.RealmQuery;
 
 /**
  * Created by andyli on 2015/7/25.

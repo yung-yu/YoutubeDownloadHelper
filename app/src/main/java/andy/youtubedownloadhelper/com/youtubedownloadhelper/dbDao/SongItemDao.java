@@ -4,10 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.andylibrary.utils.Log;
-
 import java.util.ArrayList;
 
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.db.DB;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.SongItem;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
@@ -42,9 +41,9 @@ public class SongItemDao {
         db.closeCursor(cursor);
        return songlist;
     }
-    public boolean checkExistSongItem( DB db ,SongItem item){
+    public boolean checkExistSongItem( DB db ,String youtubeId){
         Cursor cursor = db.getReadableDatabase().query(
-                "song",null,"youtubeId = \""+item.getYoutubeId()+"\"",null,null,null,null);
+                "song",null,"youtubeId = \""+youtubeId+"\"",null,null,null,null);
         boolean isExist = false;
         isExist = cursor.getCount()>0;
         db.closeCursor(cursor);
@@ -57,7 +56,7 @@ public class SongItemDao {
             for(Youtube youtube:youtubes) {
                 if (youtube != null) {
                     SongItem item = getSongItem(youtube);
-                    if (item != null && !checkExistSongItem(db, item)) {
+                    if (item != null && !checkExistSongItem(db, item.getYoutubeId())) {
                         values = item.getContentValues();
                         try {
                             db.getWriteDateBase().insertOrThrow("song", null, values);
@@ -74,7 +73,7 @@ public class SongItemDao {
         ContentValues values ;
         if(youtube != null){
             SongItem item = getSongItem(youtube);
-            if(item!=null&&!checkExistSongItem(db,item)) {
+            if(item!=null&&!checkExistSongItem(db,item.getYoutubeId())) {
                 values = item.getContentValues();
                 try {
                     db.getWriteDateBase().insertOrThrow("song", null, values);
@@ -83,6 +82,18 @@ public class SongItemDao {
                 }
             }
         }
+    }
+    public void updateSongItem( ContentValues values,String youtubeId){
+        DB db = new DB(context);
+
+        if(values!=null&&checkExistSongItem(db,youtubeId)) {
+            try {
+                db.getWriteDateBase().update("song", values, "youtubeId = \""+youtubeId+"\"",null);
+            } catch (Exception e) {
+                Log.exception(e);
+            }
+        }
+
     }
     public SongItem getSongItem(Youtube youtube){
         SongItem songItem = new SongItem();

@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.andylibrary.utils.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.YoutubeDao;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;

@@ -26,8 +26,9 @@
                 android:layout_width="120dip"
                 android:layout_height="match_parent"
                 android:id="@+id/imageView2"
-                android:src="@mipmap/ic_launcher"
-                android:layout_margin="3dip" />
+                android:src="@drawable/youtube35"
+                android:layout_margin="3dip"
+                />
 
             <TextView
                 android:layout_width="match_parent"

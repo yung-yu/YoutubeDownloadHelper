@@ -17,8 +17,8 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Toast;
 
-import com.andylibrary.utils.Log;
 
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.VideoDao;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YotubeItag;
@@ -63,7 +63,7 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
             }
             file.createNewFile();
             filePath = file.getAbsolutePath();
-            Log.d("下載儲存位置 :"+filePath);
+            Log.d("下載儲存位置 :" + filePath);
             OutputStream output = new FileOutputStream(file.getAbsolutePath());
             byte data[] = new byte[1024];
             long total = 0;

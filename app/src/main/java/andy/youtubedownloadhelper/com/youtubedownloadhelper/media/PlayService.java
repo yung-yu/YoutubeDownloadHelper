@@ -1,6 +1,7 @@
 package andy.youtubedownloadhelper.com.youtubedownloadhelper.media;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -14,15 +15,19 @@ import android.os.Messenger;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.widget.Toast;
-import com.andylibrary.utils.Log;
+import andy.spiderlibrary.utils.Log;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.SongItemDao;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.YoutubeDao;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.SongItem;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.AndroidUtils;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.NotifyManager;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.SystemContent;
+import andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube.YoutubeloadPaser;
 
 /**
  * Created by andyli on 2015/8/11.
@@ -39,11 +44,13 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
     private AudioManager mAm;
     private Context context;
     private MediaPlayer player = null;
+    private YoutubeloadPaser youtubeloadPaser;
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
         mAm = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        youtubeloadPaser = new YoutubeloadPaser(context,null);
     }
 
     @Override
@@ -155,7 +162,7 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
             return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            Log.exception(e);
             return false;
         }
     }
@@ -196,14 +203,10 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                             song.getName());
                 } catch (IOException e) {
                     Log.exception(e);
-                    player.reset();
-                    player.release();
                     player = null;
                     return false;
                 } catch (IllegalStateException e){
                     Log.exception(e);
-                    player.reset();
-                    player.release();
                     player = null;
                     return false;
                 }
@@ -223,6 +226,20 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                  SongItem song = PlayerManager.getInstance(context).getCurrentSongItem();
                  if(song!=null){
                      if(exists(song.getUrl())) {
+                         if (callBack != null)
+                             callBack.onSuccess(song, isChangeSong);
+                         return;
+                     }else{
+                         String url = "https://www.youtube.com/watch?v="+song.getYoutubeId();
+                         Youtube youtube = youtubeloadPaser.getYoutube(url, song.getYoutubeId());
+                         if(youtube!=null) {
+                             SongItem tmpsong =  SongItemDao.getInstance(context).getSongItem(youtube);
+                             ContentValues values = new ContentValues();
+                             values.put("url", tmpsong.getUrl());
+                             song.setUrl(tmpsong.getUrl());
+                             SongItemDao.getInstance(context).updateSongItem(values, youtube.getYoutubeId());
+
+                         }
                          if (callBack != null)
                              callBack.onSuccess(song, isChangeSong);
                          return;

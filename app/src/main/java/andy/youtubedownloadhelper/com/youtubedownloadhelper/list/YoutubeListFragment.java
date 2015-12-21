@@ -30,7 +30,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.andylibrary.utils.Log;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.File;
@@ -39,6 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.MainActivity;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao.SongItemDao;
@@ -105,6 +105,10 @@ public class YoutubeListFragment extends Fragment {
         playActionReciver = new PlayActionReciver();
         IntentFilter intentFilter = new IntentFilter(MediaPlayerFragment.MEDIAPLAYER_ACTION);
         LocalBroadcastManager.getInstance(activity).registerReceiver(playActionReciver, intentFilter);
+        if(PlayerManager.getInstance(activity).isUpdate()){
+            PlayerManager.getInstance(activity).setIsUpdate(false);
+            updateYoutubeList();
+        }
     }
 
     @Override
@@ -159,25 +163,7 @@ public class YoutubeListFragment extends Fragment {
                 ArrayList<Youtube> list = YoutubeDao.getInstance(activity).getYoutubes();
                 SongItemDao.getInstance(activity).addSongItems(list);
                 ArrayList<SongItem> data = SongItemDao.getInstance(activity).getSongList();
-                boolean isDeleteItem = false;
-                if(data!=null)
-                    for(SongItem item :data){
-                        if(!exists(item.getUrl())){
-                            YoutubeDao.getInstance(activity).deleteYotube(item.getYoutubeId());
-                            String url = "https://www.youtube.com/watch?v="+item.getYoutubeId();
-                            Youtube youtube = paser.getYoutube(url, item.getYoutubeId());
-                            if(youtube!=null) {
-                                YoutubeDao.getInstance(activity).addYoutube(youtube);
-                                SongItemDao.getInstance(activity).addSongItem(youtube);
-                            }
-                            isDeleteItem = true;
-                        }
-                    }
-                data = SongItemDao.getInstance(activity).getSongList();
                 PlayerManager.getInstance(activity).setSongList(data);
-                if(isDeleteItem){
-                    AndroidUtils.sendToPlayService(activity, null, PlayService.MEDIAPLAYER_STOP);
-                }
                 return data;
             }
             YoutubeloadPaser paser;
@@ -196,8 +182,7 @@ public class YoutubeListFragment extends Fragment {
             @Override
             protected void onPostExecute(ArrayList<SongItem> youtubes) {
                 super.onPostExecute(youtubes);
-                youtubeAdapter.setData(youtubes);
-                youtubeAdapter.notifyDataSetChanged();
+                youtubeAdapter.notifyItem();
                 try {
                     if (pd != null && pd.isShowing()) {
                         pd.dismiss();
@@ -214,24 +199,20 @@ public class YoutubeListFragment extends Fragment {
 
     private  class YoutubeAdapter extends RecyclerView.Adapter<MyHolder>{
         Context context;
-        int focusPostion = -1;
-        public List<SongItem> getData() {
-            return data;
-        }
-
-        public void setData(List<SongItem> data) {
-            this.data = data;
-        }
-
         public void notifyItem(){
+              data = PlayerManager.getInstance(activity).getSongList();
             if(data!=null){
-                int index = PlayerManager.getInstance(context).getIndex();
-                if(index<data.size()){
-                    recyclerView.scrollToPosition(index);
+                String youtubeId = PlayerManager.getInstance(context).getYoutubeId();
+                if(data.size()>0){
+                    for(int i =0 ;i<data.size();i++){
+                        if(youtubeId.equals(data.get(i).getYoutubeId())){
+                            recyclerView.scrollToPosition(i);
+                            break;
+                        }
+                    }
+
                 }
-                if(focusPostion!=-1)
-                    notifyItemChanged(focusPostion);
-                notifyItemChanged(index);
+                notifyDataSetChanged();
             }
         }
         List<SongItem> data;
@@ -246,11 +227,13 @@ public class YoutubeListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
+            data = PlayerManager.getInstance(activity).getSongList();
             if(data!=null)
                 return data.size();
             return 0;
         }
         public SongItem getItem(int position){
+                data = PlayerManager.getInstance(activity).getSongList();
               if(data!=null&&position<data.size()){
                   return data.get(position);
               }
@@ -263,9 +246,7 @@ public class YoutubeListFragment extends Fragment {
                    ImageManager.getInstance(context).displayImage(holder.iv_thumbnail, "http://img.youtube.com/vi/"+item.getYoutubeId()+"/0.jpg");
                    holder.tv_title.setText(item.getName());
                    holder.setPostion(position);
-                   if(PlayerManager.getInstance(context).getCurrentSongItem()!=null
-                           &&PlayerManager.getInstance(context).getCurrentSongItem().getYoutubeId().equals(item.getYoutubeId())){
-                       focusPostion = position;
+                   if(PlayerManager.getInstance(context).getYoutubeId().equals(item.getYoutubeId())){
                        holder.view.setBackgroundColor(getResources().getColor(R.color.bt_touch_color));
                    }else{
                        holder.view.setBackgroundColor(Color.WHITE);
@@ -304,8 +285,10 @@ public class YoutubeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            if(PlayerManager.getInstance(activity).setSong(postion))
+            SongItem item = youtubeAdapter.getItem(getPostion());
+            if(item!=null&&PlayerManager.getInstance(activity).setSong(item.getYoutubeId())) {
                 AndroidUtils.sendToPlayService(activity, null, PlayService.MEDIAPLAYER_CHANGESONG);
+            }
         }
         @Override
         public boolean onLongClick(View view) {

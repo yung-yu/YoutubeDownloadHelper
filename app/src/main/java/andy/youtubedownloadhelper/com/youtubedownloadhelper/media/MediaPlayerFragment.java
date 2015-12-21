@@ -29,14 +29,13 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.andylibrary.utils.Log;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.R;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.utils.AndroidUtils;
@@ -132,6 +131,12 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
             title.setText(PlayerManager.getInstance(activity).getCurrentSongItem().getName());
             title.setSelected(true);
             trackerSong();
+        }else{
+            if(PlayerManager.getInstance(activity).getMediaPlayer()!=null){
+                title.setText(PlayerManager.getInstance(activity).getCurrentSongItem().getName());
+                title.setSelected(true);
+                trackerSong();
+            }
         }
     }
 
@@ -152,10 +157,14 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
     public void trackerSong(){
         if(PlayerManager.getInstance(activity).getMediaPlayer()==null)
             return;
-        playSeekBar.setMax(PlayerManager.getInstance(activity).getMediaPlayer().getDuration());
-        playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
-        curTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition()));
-        maxTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getDuration()));
+        try {
+            playSeekBar.setMax(PlayerManager.getInstance(activity).getMediaPlayer().getDuration());
+            playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
+            curTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition()));
+            maxTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getDuration()));
+        }catch (IllegalStateException e){
+            Log.exception(e);
+        }
         Timer mTimer = new Timer();
         if(mTimerTask!=null)
             mTimerTask.cancel();
@@ -164,15 +173,19 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
             public void run() {
                 if(isChanging)
                     return;
-                if(PlayerManager.getInstance(activity).isPlay()) {
-                    playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
-                   activity.runOnUiThread(new Runnable() {
-                       @Override
-                       public void run() {
-                           curTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition()));
-                       }
-                   });
+                try {
+                    if(PlayerManager.getInstance(activity).isPlay()) {
+                        playSeekBar.setProgress(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition());
+                        activity.runOnUiThread(new Runnable() {
+                               @Override
+                               public void run() {
+                                   curTime.setText(getTimeStr(PlayerManager.getInstance(activity).getMediaPlayer().getCurrentPosition()));
+                               }
+                        });
 
+                    }
+                }catch (IllegalStateException e){
+                    Log.exception(e);
                 }
             }
         };
@@ -238,7 +251,6 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                     case SystemContent.MEDIAPLAYER_PAUSE:
                         Log.d("MEDIAPLAYER_PAUSE");
                         openUI();
-                        stopTrackSong();
                         play.setImageResource(R.drawable.player_play);
                         break;
                     case SystemContent.MEDIAPLAYER_STOP:
@@ -256,8 +268,9 @@ public class MediaPlayerFragment extends Fragment  implements SeekBar.OnSeekBarC
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_ERROR:
                         Log.d("MEDIAPLAYER_PLAYBACK_ERROR");
-                        stopTrackSong();
-                        openUI();
+                        closeUI();
+                        PlayerManager.getInstance(activity).nextSong();
+                        AndroidUtils.sendToPlayService(activity, null, PlayService.MEDIAPLAYER_CHANGESONG);
                         break;
                     case SystemContent.MEDIAPLAYER_PLAYBACK_PREPARED:
                         Log.d("MEDIAPLAYER_PLAYBACK_PREPARED");

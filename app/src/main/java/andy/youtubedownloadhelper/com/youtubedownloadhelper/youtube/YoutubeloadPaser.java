@@ -2,11 +2,12 @@ package andy.youtubedownloadhelper.com.youtubedownloadhelper.youtube;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
 
-import com.andylibrary.utils.Log;
+import andy.spiderlibrary.utils.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -45,10 +46,10 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     }
 
 
-    Activity context;
+    Context context;
     ProgressDialog progressBar;
     CallBack callBack;
-    public YoutubeloadPaser(Activity context, CallBack callBack){
+    public YoutubeloadPaser(Context context, CallBack callBack){
 
         this.context = context;
         this.callBack = callBack;

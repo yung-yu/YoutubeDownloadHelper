@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/YoutubeDownloadHelper.iml" filepath="$PROJECT_DIR$/YoutubeDownloadHelper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/andylibrary/andylibrary.iml" filepath="$PROJECT_DIR$/andylibrary/andylibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

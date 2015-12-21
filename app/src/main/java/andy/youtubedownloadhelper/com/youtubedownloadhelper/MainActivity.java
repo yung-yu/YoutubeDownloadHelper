@@ -13,8 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 
-import com.andylibrary.utils.Log;
 
+import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.list.YoutubeListFragment;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.media.MediaPlayerFragment;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.media.PlayService;
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("onDestroy");
+        MainActivity.this.stopService(new Intent(MainActivity.this, PlayService.class));
     }
     @Override
     public void onBackPressed() {

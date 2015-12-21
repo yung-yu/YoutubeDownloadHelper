@@ -12,4 +12,5 @@
     <string name="alert_cancel">取消</string>
     <string name="progress">下載進度...</string>
     <string name="alert_download">下載</string>
+    <string name="addplaylist">加入播放清單</string>
 </resources>

@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.RemoteViews;
-import com.andylibrary.utils.Log;
+import andy.spiderlibrary.utils.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
