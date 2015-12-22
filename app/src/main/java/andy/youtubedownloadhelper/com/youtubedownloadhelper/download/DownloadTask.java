@@ -88,6 +88,7 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
         return DOWNLOAD_SUCCESS;
     }
     int curP = -1;
+    
     @Override
     protected void onProgressUpdate(final Integer... progress) {
         super.onProgressUpdate(progress);
