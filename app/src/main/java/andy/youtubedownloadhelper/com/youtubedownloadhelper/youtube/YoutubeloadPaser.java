@@ -9,15 +9,16 @@ import android.text.TextUtils;
 
 import andy.spiderlibrary.utils.Log;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,14 +102,23 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         Youtube youtube = new Youtube();
         youtube.setYoutubeUrl(reference);
         youtube.setYoutubeId(youtubeId);
-        HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(url);
+
 
         Log.d("youtube  video info :" +url);
         try {
-            HttpResponse response = client.execute(get);
-            if (response.getStatusLine().getStatusCode() == 200) {
-                Document doc = Jsoup.parse(response.getEntity().getContent(), "utf8", url);
+            URL  mUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) mUrl.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(5000);
+            connection.setRequestMethod("GET");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.connect();
+
+            String response = "";
+            if (connection.getResponseCode() == 200) {
+
+                Document doc = Jsoup.parse(connection.getInputStream(), "utf8", url);
                 String[] Parms = doc.text().split("&");
                 String url_encoded_fmt_stream_map = null;
                 ArrayList<Video> urls = new ArrayList<Video>();

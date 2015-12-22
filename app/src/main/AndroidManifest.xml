@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-      <!--  <activity android:name=".download.DownLoadActivity"
+      <activity android:name=".download.DownLoadActivity"
             android:icon="@drawable/download"
             android:label="@string/share_name"
             android:screenOrientation="portrait"
@@ -36,7 +36,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
-        </activity>-->
+        </activity>
         <activity android:name=".media.AddPlayListActivity"
             android:icon="@drawable/plus_add_blue"
             android:label="@string/addplaylist"

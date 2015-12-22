@@ -3,17 +3,11 @@ package andy.youtubedownloadhelper.com.youtubedownloadhelper.dbDao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
-
-import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import andy.spiderlibrary.utils.Log;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.db.DB;
-import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Video;
 import andy.youtubedownloadhelper.com.youtubedownloadhelper.dbinfo.Youtube;
 
 /**
@@ -33,7 +27,15 @@ public class YoutubeDao {
            }
            return dao;
     }
-
+    public boolean checkExistYoubId( Youtube youtube){
+        DB db = new DB(context);
+        Cursor cursor = db.getReadableDatabase().query(
+                "youtube",null,"youtubeId = \""+youtube.getYoutubeId()+"\"",null,null,null,null);
+        boolean isExist = false;
+        isExist = cursor.getCount()>0;
+        db.closeCursor(cursor);
+        return  isExist;
+    }
    public boolean checkExistYoubId( DB db ,Youtube youtube){
        Cursor cursor = db.getReadableDatabase().query(
                "youtube",null,"youtubeId = \""+youtube.getYoutubeId()+"\"",null,null,null,null);

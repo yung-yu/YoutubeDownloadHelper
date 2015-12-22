@@ -44,6 +44,7 @@ public class DownLoadActivity extends Activity {
     LinearLayout video_contain;
     Context context;
     Youtube curYoutube;
+    Button bt_save;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,17 +53,20 @@ public class DownLoadActivity extends Activity {
         context = this;
         tv_title = (TextView) findViewById(R.id.textView);
         iv_title = (ImageView) findViewById(R.id.imageView);
-        findViewById(R.id.button3).setOnClickListener(new View.OnClickListener(){
+        bt_save = (Button) findViewById(R.id.button3);
+        bt_save.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 if(curYoutube!=null)
                   if(YoutubeDao.getInstance(context).addYoutube(curYoutube)){
+                      bt_save.setVisibility(View.INVISIBLE);
                       Toast.makeText(context,"收藏成功",Toast.LENGTH_SHORT).show();
                   }else{
                       Toast.makeText(context,"已加入收藏",Toast.LENGTH_SHORT).show();
                   }
             }
         });
+
         findViewById(R.id.button4).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -92,6 +96,9 @@ public class DownLoadActivity extends Activity {
                @Override
                public void success(Youtube youtube) {
                    curYoutube = youtube;
+                   if(YoutubeDao.getInstance(context).checkExistYoubId(curYoutube)){
+                       bt_save.setVisibility(View.INVISIBLE);
+                   }
                    tv_title.setText(curYoutube.getTitle());
                    displayImageUrl(iv_title, curYoutube.getImgeUrl());
                    showDownloadList(curYoutube.getVideoList());
