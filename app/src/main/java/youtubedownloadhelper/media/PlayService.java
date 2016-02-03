@@ -194,9 +194,9 @@ public class PlayService extends Service implements AudioManager.OnAudioFocusCha
                     player.setOnBufferingUpdateListener(this);
                     player.prepare();
                     PlayerManager.getInstance(context).setMediaPlayer(player);
-                    NotifyManager.getInstance().showMediaNotification(context,
-                            "http://img.youtube.com/vi/"+song.getYoutubeId()+"/0.jpg",
-                            song.getName());
+//                    NotifyManager.getInstance().showMediaNotification(context,
+//                            "http://img.youtube.com/vi/"+song.getYoutubeId()+"/0.jpg",
+//                            song.getName());
                 } catch (IOException e) {
                     Log.exception(e);
                     player = null;

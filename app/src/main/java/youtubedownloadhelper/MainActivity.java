@@ -26,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        AndroidUtils.startFragment(getSupportFragmentManager(), R.id.container, YoutubeListFragment.class, null);
-        AndroidUtils.startFragment(getSupportFragmentManager(), R.id.playerconatainer, MediaPlayerFragment.class, null);
 
     }
 
@@ -53,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             new AlertDialog.Builder(this)
-                    .setMessage("是否要離開")
-                    .setNegativeButton("確定", new DialogInterface.OnClickListener() {
+                    .setMessage(R.string.toExit)
+                    .setNegativeButton(R.string
+                            .Alert_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             MainActivity.this.stopService(new Intent(MainActivity.this, PlayService.class));
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }
                     })
-                    .setPositiveButton("取消",null)
+                    .setPositiveButton(R.string.cancel,null)
                     .create().show();
         } else {
             getFragmentManager().popBackStack();

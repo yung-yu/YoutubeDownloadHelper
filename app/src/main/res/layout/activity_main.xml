@@ -7,21 +7,23 @@
     >
 
 
-    <FrameLayout
+    <fragment
+        android:name="youtubedownloadhelper.list.YoutubeListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/container"
         android:layout_below="@+id/toolbar"
         android:layout_above="@+id/playerconatainer">
-    </FrameLayout>
-    <FrameLayout
+    </fragment>
+    <fragment
+        android:name="youtubedownloadhelper.media.MediaPlayerFragment"
         android:layout_width="match_parent"
         android:layout_height="130dip"
         android:id="@+id/playerconatainer"
         android:layout_alignParentBottom="true"
         >
 
-    </FrameLayout>
+    </fragment>
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
