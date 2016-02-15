@@ -178,7 +178,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         }else if(reference.contains("https://youtu.be/")){
             videoId = reference.substring(reference.lastIndexOf("/")+1);
         }
-        if(videoId.contains("&")){
+        if(!TextUtils.isEmpty(videoId)&&videoId.contains("&")){
             videoId = videoId.substring(0,videoId.indexOf("&"));
         }
         Log.d("videoId : "+videoId);
