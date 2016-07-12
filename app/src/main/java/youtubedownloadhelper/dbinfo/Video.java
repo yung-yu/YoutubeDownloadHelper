@@ -3,26 +3,23 @@ package youtubedownloadhelper.dbinfo;
 
 import android.database.Cursor;
 
-import andy.spiderlibrary.db.Column;
-import andy.spiderlibrary.db.Table;
 
 
 /**
  * Created by andyli on 2015/7/25.
  */
-@Table(tableName = "video")
 public class Video  {
-    @Column(name = "Id" ,type = "integer primary key AUTOINCREMENT" , index = 0)
+
     private int id ;
-    @Column(name = "youtubeId" ,type = "text", index = 1)
+
     private String youtubeId ;
-    @Column(name = "videoUrl" ,type = "text", index = 2)
+
     private String videoUrl ;
-    @Column(name = "itag" , type = "integer", index = 3)
+
     private int itag;
-    @Column(name = "localFilePath" , type = "text", index = 4)
+
     private String localFilePath;
-    @Column(name = "lastUpdateDate",type = "integer", index = 5 )
+
     private long lastUpdateDate;
 
     public Video(){

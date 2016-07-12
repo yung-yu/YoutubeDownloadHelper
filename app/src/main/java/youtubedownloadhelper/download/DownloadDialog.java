@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import andy.spiderlibrary.utils.Log;
 import youtubedownloadhelper.R;
 import youtubedownloadhelper.Preferences.sharePerferenceHelper;
 
@@ -78,7 +77,6 @@ public class DownloadDialog extends AlertDialog.Builder {
         et_name.setText(fileName);
         iv_back.setOnClickListener(new BackEvent());
         String path =  sharePerferenceHelper.getIntent(context).getString("path",Environment.getExternalStorageDirectory().getAbsolutePath());
-        Log.d("當前檔案位置:" + path);
         updateFile(new File(path));
         bt_addDirc.setOnClickListener(new View.OnClickListener(){
             @Override

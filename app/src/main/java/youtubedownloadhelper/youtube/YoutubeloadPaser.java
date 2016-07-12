@@ -6,8 +6,6 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 
 
-import andy.spiderlibrary.utils.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -99,8 +97,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         youtube.setYoutubeUrl(reference);
         youtube.setYoutubeId(youtubeId);
 
-
-        Log.d("youtube  video info :" +url);
         try {
             URL  mUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) mUrl.openConnection();
@@ -141,7 +137,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                             video.setItag(itag);
                             if(type!=null&&videoType!=null&&!type.equals("WEB")&&!type.equals("FLV")
                                     &&!(videoUrl.isEmpty()||type.isEmpty()||videoType.isEmpty()||itag.equals("-1"))) {
-                                Log.d("video url:"+videoUrl);
                                 urls.add(video);
                             }
 
@@ -167,7 +162,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     }
     public String getVideoId(String reference){
         String videoId = null;
-        Log.d("reference : "+reference);
+
         if(reference.startsWith("https://www.youtube.com/watch?v=")){
             videoId = reference.substring("https://www.youtube.com/watch?v=".length());
         }else if(reference.startsWith("https://m.youtube.com/watch?v=")){
@@ -181,7 +176,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         if(!TextUtils.isEmpty(videoId)&&videoId.contains("&")){
             videoId = videoId.substring(0,videoId.indexOf("&"));
         }
-        Log.d("videoId : "+videoId);
+
         return videoId;
     }
     public boolean isValid(String url) {
@@ -244,7 +239,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                 try {
                     return Integer.valueOf(value);
                 }catch (NumberFormatException e){
-                    Log.exception(e);
+
                     break;
                 }
             }

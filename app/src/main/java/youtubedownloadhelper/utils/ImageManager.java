@@ -3,8 +3,6 @@ package youtubedownloadhelper.utils;
 import android.content.Context;
 import android.widget.ImageView;
 
-import andy.spiderlibrary.utils.Log;
-
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -48,7 +46,6 @@ public class ImageManager {
 
     }
     public void displayImage(ImageView iv,String url,int defautIcon){
-        Log.d("image url :" + url);
         imageLoader.displayImage(url, iv);
 
     }

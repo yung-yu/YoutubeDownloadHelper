@@ -10,10 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 
-import andy.spiderlibrary.utils.Log;
-import youtubedownloadhelper.media.PlayService;
-import youtubedownloadhelper.media.PlayerBroadcastReceiver;
-
 /**
  * Created by andyli on 2015/7/25.
  */
@@ -39,7 +35,7 @@ public class AndroidUtils {
 
      }catch (Exception e){
          e.printStackTrace();
-         Log.exception(e);
+
      }
     }
     public static void startFragment(FragmentManager fm,int weightId,Class<? extends Fragment> cls,Bundle bundle){
@@ -55,7 +51,6 @@ public class AndroidUtils {
 
         }catch (Exception e){
             e.printStackTrace();
-            Log.exception(e);
         }
     }
     public static void finish(FragmentManager fm){
@@ -63,44 +58,17 @@ public class AndroidUtils {
             if(fm!=null)
                 fm.popBackStack();
         }catch (Exception e){
-            Log.exception(e);
         }
     }
 
-    public static void sendBroadCastToPlayer(Context context,Bundle bd,int cmd){
-          try{
-              Intent it = new Intent(PlayerBroadcastReceiver.ACTION_NAME);
-              if(bd!=null){
-                  bd.putInt(PlayerBroadcastReceiver.BUNDLEKEY_PLAYERCMD, cmd);
-                  it.putExtras(bd);
-              }else {
-                  it.putExtra(PlayerBroadcastReceiver.BUNDLEKEY_PLAYERCMD, cmd);
-              }
-              context.sendBroadcast(it);
-          }catch (Exception e){
-              Log.exception(e);
-          }
-    }
+
     public static boolean isNetworkConnected(Context context){
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-    public static void sendToPlayService(Context context,Bundle bd,int cmd){
-        try{
-            Intent it = new Intent(context,PlayService.class);
-            if(bd!=null){
-                bd.putInt(PlayService.BUNDLE_CMD, cmd);
-                it.putExtras(bd);
-            }else {
-                it.putExtra(PlayService.BUNDLE_CMD, cmd);
-            }
-            context.startService(it);
-        }catch (Exception e){
-            Log.exception(e);
-        }
-    }
+
 
    public static boolean isNetWorkOK(Context context){
 

@@ -17,10 +17,8 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Toast;
 
-
-import andy.spiderlibrary.utils.Log;
 import youtubedownloadhelper.R;
-import youtubedownloadhelper.dbDao.VideoDao;
+
 import youtubedownloadhelper.youtube.YotubeItag;
 
 public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
@@ -53,8 +51,7 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
             URLConnection conection = url.openConnection();
             conection.connect();
             int lenghtOfFile = conection.getContentLength();
-            vh.progressBar.setMax(100);
-            vh.progressBar.setProgress(0);
+
             InputStream input = new BufferedInputStream(url.openStream(),8192);
 
             File file = new File(params[1],params[2]);
@@ -63,7 +60,7 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
             }
             file.createNewFile();
             filePath = file.getAbsolutePath();
-            Log.d("下載儲存位置 :" + filePath);
+
             OutputStream output = new FileOutputStream(file.getAbsolutePath());
             byte data[] = new byte[1024];
             long total = 0;
@@ -79,12 +76,12 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
             output.close();
             input.close();
         }catch (IOException e) {
-            Log.exception(e);
+
             return DOWNLOAD_FAIL;
 
         }
         this.vh.video.setLocalFilePath(filePath);
-        VideoDao.getInstance(context).updateVideo(this.vh.video);
+
         return DOWNLOAD_SUCCESS;
     }
     int curP = -1;

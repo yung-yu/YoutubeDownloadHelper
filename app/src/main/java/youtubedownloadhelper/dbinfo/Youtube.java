@@ -5,28 +5,26 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
-import andy.spiderlibrary.db.Column;
-import andy.spiderlibrary.db.Table;
 
 /**
  * Created by andyli on 2015/7/25.
  */
-@Table(tableName = "youtube")
+
 public class Youtube  {
 
-    @Column(name = "youtubeId" ,type = "text primary key" , index = 0)
+
     private String youtubeId;
 
-    @Column(name = "youtubeUrl" ,type = "text", index = 1)
+
     private String youtubeUrl;
 
-    @Column(name = "title" ,type = "text" , index = 2)
+
     private String title;
 
-    @Column(name = "imgeUrl" ,type = "text" , index = 3)
+
     private String imgeUrl;
 
-    @Column(name = "lastUpdateDate" ,type = "integer", index = 4)
+
     private Integer lastUpdateDate;
 
     private ArrayList<Video> videoList;

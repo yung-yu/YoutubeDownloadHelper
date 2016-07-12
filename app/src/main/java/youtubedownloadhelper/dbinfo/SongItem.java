@@ -3,26 +3,23 @@ package youtubedownloadhelper.dbinfo;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import andy.spiderlibrary.db.Column;
-import andy.spiderlibrary.db.Table;
 
 
 /**
  * Created by andyli on 2015/8/22.
  */
-@Table(tableName = "song")
 public class SongItem {
-    @Column(name = "youtubeId" ,type = "text" , index = 0)
+
     String youtubeId ;
-    @Column(name = "name" ,type = "text" , index = 1)
+
     String name ;
-    @Column(name = "islocal" ,type = "integer not null" , index = 2)
+
     boolean isLocal ;
-    @Column(name = "url" ,type = "text" , index = 3)
+
     String url;
-    @Column(name = "file" ,type = "text" , index = 4)
+
     String file;
-    @Column(name = "lastUpdateDate",type = "integer", index = 5 )
+
     long lastUpdateDate;
 
     public SongItem(){

@@ -25,9 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import andy.spiderlibrary.utils.Log;
 import youtubedownloadhelper.R;
-import youtubedownloadhelper.dbDao.YoutubeDao;
 import youtubedownloadhelper.dbinfo.Video;
 import youtubedownloadhelper.dbinfo.Youtube;
 import youtubedownloadhelper.Preferences.sharePerferenceHelper;
@@ -80,7 +78,6 @@ public class DownLoadActivity extends Activity {
 
    public void youtubePaser(String sharedText){
        if (!TextUtils.isEmpty(sharedText)) {
-           Log.d("youtube :" + sharedText);
            new YoutubeloadPaser(this, new YoutubeloadPaser.CallBack(){
                @Override
                public void success(Youtube youtube) {

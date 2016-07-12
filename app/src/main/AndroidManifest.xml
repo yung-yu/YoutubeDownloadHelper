@@ -35,24 +35,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".media.AddPlayListActivity"
-            android:icon="@drawable/plus_add_blue"
-            android:label="@string/addplaylist"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@style/DialogActivityStyle">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
-        <service android:name=".media.PlayService" />
-        <receiver android:name=".media.PlayerBroadcastReceiver" >
-            <intent-filter>
-                <action android:name="playerlistener"/>
-            </intent-filter>
-        </receiver>
+        ss
     </application>
 
 </manifest>
