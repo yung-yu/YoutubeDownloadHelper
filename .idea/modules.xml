@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/YoutubeDownloadHelper.iml" filepath="$PROJECT_DIR$/YoutubeDownloadHelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spiderlibrary-1.7/spiderlibrary-1.7.iml" filepath="$PROJECT_DIR$/spiderlibrary-1.7/spiderlibrary-1.7.iml" />
     </modules>
   </component>
 </project>
