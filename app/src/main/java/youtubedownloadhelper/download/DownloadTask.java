@@ -14,6 +14,7 @@ import java.net.URLConnection;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,24 +22,24 @@ import youtubedownloadhelper.R;
 
 import youtubedownloadhelper.youtube.YotubeItag;
 
-public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
-
-    private DownLoadActivity.ViewHolder vh;
+public class DownloadTask extends AsyncTask<String, Integer, Integer> {
+    private final static String TAG = "DownloadTask";
+    private DownLoadActivity.MyViewHolder vh;
 
     private Activity context = null;
     public final Integer DOWNLOAD_SUCCESS = 0;
     public final Integer DOWNLOAD_FAIL = 1;
-    public DownloadTask(Activity c , DownLoadActivity.ViewHolder vh){
+    public DownLoadActivity.DownloadAdapter adapter;
+    public int curProgress = 0;
+
+    public DownloadTask(Activity c , DownLoadActivity.DownloadAdapter adapter  ){
         this.context = c;
-        this.vh = vh;
+        this.adapter = adapter;
 
     }
     protected void onPreExecute() {
         super.onPreExecute();
-        vh.bt.setSelected(true);
-        vh.bt.setEnabled(false);
-        vh.progressBar.setVisibility(View.VISIBLE);
-
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -76,44 +77,38 @@ public  class DownloadTask extends AsyncTask<String, Integer, Integer> {
             output.close();
             input.close();
         }catch (IOException e) {
-
             return DOWNLOAD_FAIL;
-
         }
         this.vh.video.setLocalFilePath(filePath);
 
         return DOWNLOAD_SUCCESS;
     }
-    int curP = -1;
+
 
     @Override
     protected void onProgressUpdate(final Integer... progress) {
         super.onProgressUpdate(progress);
         final int progressIndex = progress[0];
-        if(curP!=progressIndex) {
-            curP = progressIndex;
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    vh.progressBar.setProgress(progressIndex);
-                    vh.bt.setText(context.getString(R.string.progress) + " - " + progressIndex + " %");
-                }
-            });
-
+        if(curProgress !=progressIndex) {
+            curProgress = progressIndex;
+            Log.d(TAG, "download progress :"+curProgress);
+            if(adapter != null){
+                adapter.notifyDataSetChanged();
+            }
         }
+
     }
 
     @Override
     protected void onPostExecute(Integer s) {
         super.onPostExecute(s);
-        vh.bt.setSelected(false);
-        vh.bt.setText(YotubeItag.getVideoDescribe(vh.video.getItag()));
-        vh.bt.setEnabled(true);
-        vh.progressBar.setVisibility(View.GONE);
         if(s.equals(DOWNLOAD_SUCCESS)) {
             Toast.makeText(context, context.getString(R.string.download_success), Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(context, context.getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
+        }
+        if(adapter != null){
+            adapter.notifyDataSetChanged();
         }
     }
 }

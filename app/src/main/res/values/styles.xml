@@ -1,14 +1,14 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">#E00006</item>
         <item name="colorPrimaryDark">#790205</item>
-        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorPrimary">#000000</item>
     </style>
-    <style name="DialogActivityStyle" parent="Theme.AppCompat.Dialog">
+    <style name="DialogActivityStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:windowBackground">@color/helf_Translucent</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowCloseOnTouchOutside">false</item>

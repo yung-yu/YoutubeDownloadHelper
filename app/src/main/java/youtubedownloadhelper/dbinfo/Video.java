@@ -2,7 +2,9 @@ package youtubedownloadhelper.dbinfo;
 
 
 import android.database.Cursor;
+import android.text.TextUtils;
 
+import java.io.File;
 
 
 /**
@@ -21,6 +23,7 @@ public class Video  {
     private String localFilePath;
 
     private long lastUpdateDate;
+
 
     public Video(){
 
@@ -80,5 +83,13 @@ public class Video  {
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
+    }
+
+    public boolean isDownlaod(){
+        if(!TextUtils.isEmpty(localFilePath)){
+            File file = new File(localFilePath);
+            return file.exists();
+        }
+        return false;
     }
 }

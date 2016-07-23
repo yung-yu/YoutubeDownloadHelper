@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/youtube_download_page_magin"
+    android:orientation="vertical"
     >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dip"
+        android:layout_height="200dp"
         android:id="@+id/top">
         <ImageView
             android:layout_width="match_parent"
@@ -28,40 +29,25 @@
             android:gravity="center"
             android:textStyle="bold"
             android:layout_alignBottom="@+id/imageView" />
+
     </RelativeLayout>
 
 
-
-    <ScrollView
+    <ListView
+        android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/scrollView"
+        android:layout_height="0dp"
         android:layout_below="@+id/top"
-        android:fillViewport="false">
+        android:layout_above="@+id/linearLayout"
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/video_contain"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+    </ListView>
 
-            </LinearLayout>
-    </ScrollView>
-
-    <LinearLayout
-        android:orientation="horizontal"
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="40dip"
-        android:layout_below="@+id/scrollView"
-        android:layout_centerHorizontal="true">
+        android:layout_height="wrap_content"
+        android:text="結束"
+        android:id="@+id/button4"
+        android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="結束"
-            android:id="@+id/button4"
-            />
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 
 import org.jsoup.Jsoup;
@@ -24,9 +25,9 @@ import youtubedownloadhelper.dbinfo.Youtube;
  * Created by andy on 2015/3/8.
  */
 public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
-
+    private final static String TAG = "YoutubeloadPaser";
     public static final String VIDEO_INFO_URL = "http://www.youtube.com/get_video_info?video_id=";
-    public static final String VIDEO_INFO_PARM = "&asv=2&el=detailpage&hl=en_US";
+    public static final String VIDEO_INFO_PARM = "&=3&el=detailpage&hl=en_US";
     public static final ArrayList<String> BAD_KEYS = new ArrayList<String>();
     static{
         BAD_KEYS.add("stereo3d");
@@ -93,6 +94,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
 
     public  Youtube getYoutube(String reference,String youtubeId){
         String url = VIDEO_INFO_URL+youtubeId+VIDEO_INFO_PARM;
+        Log.d(TAG, "api url :"+url);
         Youtube youtube = new Youtube();
         youtube.setYoutubeUrl(reference);
         youtube.setYoutubeId(youtubeId);
@@ -102,7 +104,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
             HttpURLConnection connection = (HttpURLConnection) mUrl.openConnection();
             connection.setReadTimeout(10000);
             connection.setConnectTimeout(5000);
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.connect();
@@ -111,6 +113,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
             if (connection.getResponseCode() == 200) {
 
                 Document doc = Jsoup.parse(connection.getInputStream(), "utf8", url);
+                Log.d(TAG, " url doc :"+doc);
                 String[] Parms = doc.text().split("&");
                 String url_encoded_fmt_stream_map = null;
                 ArrayList<Video> urls = new ArrayList<Video>();
@@ -125,10 +128,11 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                             Video video = new Video();
                             String decodeU = decode(videoUrl);
                             videoUrl = getCorrectURL(decodeU);
-
+                            Log.d(TAG, "video url :"+videoUrl);
                             if (!videoUrl.toLowerCase().startsWith("http") && !isValid(videoUrl)) {
                                 continue;
                             }
+
                             video.setYoutubeId(youtubeId);
                             video.setVideoUrl(videoUrl);
                             Integer itag = getItag(videoUrl);
@@ -165,16 +169,16 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
 
         if(reference.startsWith("https://www.youtube.com/watch?v=")){
             videoId = reference.substring("https://www.youtube.com/watch?v=".length());
-        }else if(reference.startsWith("https://m.youtube.com/watch?v=")){
+        } else if(reference.startsWith("https://m.youtube.com/watch?v=")){
             videoId = reference.substring("https://m.youtube.com/watch?v=".length());
-        }
-        else if(reference.contains("http://youtu.be/")){
+        } else if(reference.contains("http://youtu.be/")){
             videoId = reference.substring(reference.lastIndexOf("/")+1);
-        }else if(reference.contains("https://youtu.be/")){
+        } else if(reference.contains("https://youtu.be/")){
             videoId = reference.substring(reference.lastIndexOf("/")+1);
-        }
-        if(!TextUtils.isEmpty(videoId)&&videoId.contains("&")){
+        } else if(!TextUtils.isEmpty(videoId)&&videoId.contains("&")){
             videoId = videoId.substring(0,videoId.indexOf("&"));
+        } else{
+            videoId = reference;
         }
 
         return videoId;

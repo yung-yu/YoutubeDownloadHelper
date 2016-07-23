@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name">Youtube播放列表</string>
+    <string name="app_name">Youtube下載器</string>
     <string name="share_name">Youtube下載</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_play_All">播放全部</string>
     <string name="download_wait">下載中...</string>
     <string name="download_fail">下載失敗</string>
@@ -16,4 +15,9 @@
     <string name="toExit">是否要離開?</string>
     <string name="Alert_ok">確認</string>
     <string name="cancel">取消</string>
+    <string name="value_id">請輸入Youtube的Video ID</string>
+    <string name="uninstall">解除安裝</string>
+    <string name="uninstall_msg">感謝您的使用!</string>
+    <string name="play_video">播放</string>
+    <string name="cancel_dowwnload">取消下載</string>
 </resources>

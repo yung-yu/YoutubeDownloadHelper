@@ -30,12 +30,18 @@ import youtubedownloadhelper.Preferences.sharePerferenceHelper;
  */
 public class DownloadDialog extends AlertDialog.Builder {
 
-    ImageView bt_addDirc;
-    ListView listview;
-    ImageView iv_back;
-    EditText et_name;
-    TextView tv_path;
-    FileAdapter fileAdapter;
+    private ImageView bt_addDirc;
+    private ListView listview;
+    private ImageView iv_back;
+    private EditText et_name;
+    private TextView tv_path;
+    private FileAdapter fileAdapter;
+    private String fileName;
+    private Context context;
+
+    public interface OnFileSelectListener{
+        void onFileSelected(String filePah);
+    }
 
     public String getCurrentFilePath() {
         return currentFile.getAbsolutePath();
@@ -43,11 +49,15 @@ public class DownloadDialog extends AlertDialog.Builder {
     public String getCurrentFileName(){
         return et_name.getText().toString();
     }
-    File currentFile ;
-    List<File> fileList = new ArrayList<File>();
-    String fileName;
-    Context context;
-    public DownloadDialog(final Context context,String fileName) {
+    private File currentFile ;
+    private  List<File> fileList = new ArrayList<File>();
+    private OnFileSelectListener onFileSelectListener;
+
+    public void setOnFileSelectListener(OnFileSelectListener onFileSelectListener) {
+        this.onFileSelectListener = onFileSelectListener;
+    }
+
+    public DownloadDialog(final Context context, String fileName) {
         super(context);
         this.fileName = fileName;
         this.context = context;
@@ -109,9 +119,27 @@ public class DownloadDialog extends AlertDialog.Builder {
                 ab.create().show();
             }
         });
+        setPositiveButton(R.string.alert_download, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               if(onFileSelectListener != null)
+                   onFileSelectListener.onFileSelected(getCurrentFilePath());
+            }
+        });
+       setNegativeButton(R.string.alert_cancel, null);
     }
 
-    public  boolean createNewDir(String dstPath,String dirName){
+    @Override
+    public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
+        return null;
+    }
+
+    @Override
+    public AlertDialog.Builder setNegativeButton(int textId, DialogInterface.OnClickListener listener) {
+        return null;
+    }
+
+    public  boolean createNewDir(String dstPath, String dirName){
         File desfile = new File(dstPath);
         String[] filelist = desfile.list();
         int count=0;
