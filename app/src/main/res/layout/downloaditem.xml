@@ -29,13 +29,14 @@
             android:background="@drawable/download_progressbar_bg"
             android:max="100"
             android:progress="50"
-            android:visibility="visible" />
+            android:visibility="visible"
+            android:indeterminate="false" />
 
     </LinearLayout>
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/cancel_dowwnload"
+        android:text="@string/alert_cancel"
         android:visibility="gone" />
 </LinearLayout>

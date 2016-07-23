@@ -14,50 +14,57 @@ import java.net.URLConnection;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import youtubedownloadhelper.R;
 
+import youtubedownloadhelper.dbinfo.Video;
 import youtubedownloadhelper.youtube.YotubeItag;
 
-public class DownloadTask extends AsyncTask<String, Integer, Integer> {
+public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
     private final static String TAG = "DownloadTask";
-    private DownLoadActivity.MyViewHolder vh;
-
     private Activity context = null;
     public final Integer DOWNLOAD_SUCCESS = 0;
     public final Integer DOWNLOAD_FAIL = 1;
-    public DownLoadActivity.DownloadAdapter adapter;
+    private Handler handler;
     public int curProgress = 0;
+    private int position;
 
-    public DownloadTask(Activity c , DownLoadActivity.DownloadAdapter adapter  ){
+    public DownloadTask(Activity c , Handler handler,int position){
         this.context = c;
-        this.adapter = adapter;
+        this.handler = handler;
+        this.position = position;
 
     }
     protected void onPreExecute() {
         super.onPreExecute();
-        adapter.notifyDataSetChanged();
+        if(handler != null){
+            handler.sendEmptyMessage(DownLoadActivity.NOTFTY_ADAPTER);
+        }
+
     }
 
 
     @Override
-    protected Integer doInBackground(String... params) {
+    protected Integer doInBackground(Object... params) {
         int count;
         String filePath = "";
+        Video video = (Video) params[0];
         try {
-            URL url = new URL(params[0]);
+            URL url = new URL(video.getVideoUrl());
             URLConnection conection = url.openConnection();
             conection.connect();
             int lenghtOfFile = conection.getContentLength();
 
             InputStream input = new BufferedInputStream(url.openStream(),8192);
 
-            File file = new File(params[1],params[2]);
+            File file = new File((String)params[1],(String)params[2]);
             if(file.exists()) {
-                file.delete();
+                video.setLocalFilePath(filePath);
+                return DOWNLOAD_SUCCESS;
             }
             file.createNewFile();
             filePath = file.getAbsolutePath();
@@ -77,10 +84,13 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
             output.close();
             input.close();
         }catch (IOException e) {
+            File file = new File(filePath);
+            if(file.exists()){
+                file.delete();
+            }
             return DOWNLOAD_FAIL;
         }
-        this.vh.video.setLocalFilePath(filePath);
-
+        video.setLocalFilePath(filePath);
         return DOWNLOAD_SUCCESS;
     }
 
@@ -92,8 +102,8 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
         if(curProgress !=progressIndex) {
             curProgress = progressIndex;
             Log.d(TAG, "download progress :"+curProgress);
-            if(adapter != null){
-                adapter.notifyDataSetChanged();
+            if(handler != null) {
+                handler.sendEmptyMessage(DownLoadActivity.NOTFTY_ADAPTER);
             }
         }
 
@@ -102,13 +112,15 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
     @Override
     protected void onPostExecute(Integer s) {
         super.onPostExecute(s);
+
         if(s.equals(DOWNLOAD_SUCCESS)) {
+            if(handler != null) {
+                handler.obtainMessage(DownLoadActivity.DOWNLOAD_FINISH, position).sendToTarget();
+            }
             Toast.makeText(context, context.getString(R.string.download_success), Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(context, context.getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
         }
-        if(adapter != null){
-            adapter.notifyDataSetChanged();
-        }
+
     }
 }

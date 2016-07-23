@@ -8,6 +8,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,9 +25,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,15 +52,24 @@ import youtubedownloadhelper.youtube.YoutubeloadPaser;
 /**
  * Created by andy on 2015/3/8.
  */
-public class DownLoadActivity extends Activity implements AdapterView.OnItemClickListener{
+public class DownLoadActivity extends Activity implements AdapterView.OnItemClickListener {
     private final static String TAG = "DownLoadActivity";
     public final static String BUNDLE_KEY_YOUTUBE_ID = "BUNDLE_KEY_YOUTUBE_ID";
+    public final static int NOTFTY_ADAPTER = 0;
+    public final static int DOWNLOAD_FINISH = 1;
     private TextView tv_title;
     private ImageView iv_title;
     private Context context;
     private Youtube curYoutube;
     private ListView listView;
     private DownloadAdapter downloadAdapter;
+    private LinearLayout download_page;
+    private RelativeLayout loading_Page;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +80,8 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         tv_title = (TextView) findViewById(R.id.textView);
         iv_title = (ImageView) findViewById(R.id.imageView);
         listView = (ListView) findViewById(R.id.listview);
+        download_page = (LinearLayout) findViewById(R.id.download_page);
+        loading_Page = (RelativeLayout) findViewById(R.id.loading_Page);
         findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,9 +106,13 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
 
     public void youtubePaser(String sharedText) {
         if (!TextUtils.isEmpty(sharedText)) {
+            download_page.setVisibility(View.GONE);
+            loading_Page.setVisibility(View.VISIBLE);
             new YoutubeloadPaser(this, new YoutubeloadPaser.CallBack() {
                 @Override
                 public void success(Youtube youtube) {
+                    download_page.setVisibility(View.VISIBLE);
+                    loading_Page.setVisibility(View.GONE);
                     curYoutube = youtube;
                     tv_title.setText(curYoutube.getTitle());
                     displayImageUrl(iv_title, curYoutube.getImgeUrl());
@@ -150,16 +173,26 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d(TAG, "onItemClick "+position);
-        if(!downloadAdapter.isDownloading(position)) {
+        Log.d(TAG, "onItemClick " + position);
+        if (!downloadAdapter.isDownloading(position)) {
             Video video = downloadAdapter.getItem(position);
-
             if (video.isDownlaod()) {
                 playVideo(video.getLocalFilePath());
             } else {
                 downloadVideo(position, video);
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 
     public class MyViewHolder {
@@ -210,37 +243,40 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
             return 0;
         }
 
-        public void putDownloadCache(int position, DownloadTask task){
+        public void putDownloadCache(int position, DownloadTask task) {
             taskCache.put(position, task);
         }
-
-        public boolean isDownloading(int position){
+        public void removeDownloadCache(int position) {
+            taskCache.remove(position);
+        }
+        public boolean isDownloading(int position) {
             return taskCache.containsKey(position);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             MyViewHolder holder;
-            if(convertView == null ){
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.downloaditem, null);
                 holder = new MyViewHolder(convertView);
                 convertView.setTag(holder);
-            }else{
+            } else {
                 holder = (MyViewHolder) convertView.getTag();
             }
             Video video = getItem(position);
             if (holder != null && video != null) {
                 holder.setVideo(video);
-                holder.text.setText(YotubeItag.getVideoDescribe(video.getItag()));
+                holder.text.setText(YotubeItag.getVideoDescribe(video.getItag())
+                        +(video.isDownlaod()?"-播放":""));
                 DownloadTask task = taskCache.get(position);
-                if(task != null && !task.isCancelled()){
+                if (task != null && !task.isCancelled()) {
                     holder.bt.setVisibility(View.VISIBLE);
                     holder.bt.setTag(task);
-                    holder.bt.setOnClickListener(new View.OnClickListener(){
+                    holder.bt.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             DownloadTask task = (DownloadTask) v.getTag();
-                            if(task != null &&  !task.isCancelled()){
+                            if (task != null && !task.isCancelled()) {
                                 task.cancel(true);
                                 taskCache.remove(task);
                                 downloadAdapter.notifyDataSetChanged();
@@ -249,7 +285,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
                     });
                     holder.progressBar.setVisibility(View.VISIBLE);
                     holder.progressBar.setProgress(task.curProgress);
-                }else{
+                } else {
                     holder.bt.setVisibility(View.GONE);
                     holder.progressBar.setVisibility(View.GONE);
                 }
@@ -260,25 +296,45 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
 
     }
 
-    public void downloadVideo(final int position, final Video video){
+    private Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case NOTFTY_ADAPTER:
+                    if(downloadAdapter != null){
+                        downloadAdapter.notifyDataSetChanged();
+                    }
+                    break;
+                case DOWNLOAD_FINISH:
+                    if(downloadAdapter != null){
+                        downloadAdapter.removeDownloadCache(msg.arg1);
+                        downloadAdapter.notifyDataSetChanged();
+                    }
+                    break;
+            }
+        }
+    };
+
+    public void downloadVideo(final int position, final Video video) {
         final DownloadDialog downloadDialog = new DownloadDialog(context, curYoutube.getTitle() + "." + YotubeItag.getVideoType(video.getItag()));
         downloadDialog.setOnFileSelectListener(new DownloadDialog.OnFileSelectListener() {
             @Override
             public void onFileSelected(String filePah) {
-               sharePerferenceHelper.getIntent(context).setString("path", filePah);
-                DownloadTask task = new DownloadTask(DownLoadActivity.this, downloadAdapter);
+                sharePerferenceHelper.getIntent(context).setString("path", filePah);
+                DownloadTask task = new DownloadTask(DownLoadActivity.this, handler, position);
                 downloadAdapter.putDownloadCache(position, task);
-                task.execute(video.getVideoUrl(), filePah, downloadDialog.getCurrentFileName());
+                task.execute(video, filePah, downloadDialog.getCurrentFileName());
             }
         });
         downloadDialog.create().show();
     }
 
-    public void playVideo(String filePath){
+    public void playVideo(String filePath) {
         Uri contentUri = Uri.parse(filePath);
-        Intent intent = new Intent( Intent.ACTION_VIEW );
-        intent.setDataAndType( contentUri, "video/mp4" );
-        context.startActivity( intent );
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(contentUri, "video/mp4");
+        context.startActivity(intent);
     }
 
 }

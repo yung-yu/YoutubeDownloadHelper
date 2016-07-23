@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="helf_Translucent">#90000000</color>
+    <color name="helf_Translucent">#40000000</color>
     <color name="bt_touch_color">#6699FF</color>
 </resources>

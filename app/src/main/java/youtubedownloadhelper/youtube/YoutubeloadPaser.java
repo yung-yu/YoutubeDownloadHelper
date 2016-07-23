@@ -43,22 +43,16 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
 
 
     Context context;
-    ProgressDialog progressBar;
     CallBack callBack;
     public YoutubeloadPaser(Context context, CallBack callBack){
 
         this.context = context;
         this.callBack = callBack;
-        progressBar = new ProgressDialog(context);
-        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressBar.setMessage("search waiting...");
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if(!progressBar.isShowing())
-          progressBar.show();
     }
 
     @Override
@@ -72,7 +66,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
             }
 
         }
-        progressBar.cancel();
     }
 
     @Override
