@@ -255,6 +255,27 @@ public class DownloadDialog extends AlertDialog.Builder {
                    }
                }
             );
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+
+                    new AlertDialog.Builder(context)
+                            .setTitle("是否要刪除?")
+                            .setNegativeButton(R.string.alert_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    File f = data.get(position);
+                                    if(f.exists()){
+                                        f.delete();
+                                    }
+                                    updateFile(currentFile);
+                                }
+                            })
+                            .setPositiveButton(R.string.alert_cancel,null)
+                            .create().show();
+                    return false;
+                }
+            });
             return convertView;
         }
     }

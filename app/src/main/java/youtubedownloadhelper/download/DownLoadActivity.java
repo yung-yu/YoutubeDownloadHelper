@@ -246,11 +246,11 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         public void putDownloadCache(int position, DownloadTask task) {
             taskCache.put(position, task);
         }
-        public void removeDownloadCache(int position) {
-            taskCache.remove(position);
+        public void removeDownloadCache(int positon) {
+            taskCache.put(positon, null);
         }
         public boolean isDownloading(int position) {
-            return taskCache.containsKey(position);
+            return taskCache.get(position) != null && !taskCache.get(position).isCancelled();
         }
 
         @Override
@@ -317,7 +317,8 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
     };
 
     public void downloadVideo(final int position, final Video video) {
-        final DownloadDialog downloadDialog = new DownloadDialog(context, curYoutube.getTitle() + "." + YotubeItag.getVideoType(video.getItag()));
+        final DownloadDialog downloadDialog = new DownloadDialog(context, curYoutube.getTitle()+"_"+YotubeItag.getVideoDescribe(video.getItag())
+                                                        + "." + YotubeItag.getVideoType(video.getItag()));
         downloadDialog.setOnFileSelectListener(new DownloadDialog.OnFileSelectListener() {
             @Override
             public void onFileSelected(String filePah) {

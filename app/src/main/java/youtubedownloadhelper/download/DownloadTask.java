@@ -62,9 +62,11 @@ public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
             InputStream input = new BufferedInputStream(url.openStream(),8192);
 
             File file = new File((String)params[1],(String)params[2]);
-            if(file.exists()) {
+            if(file.exists()&& file.length() == lenghtOfFile) {
                 video.setLocalFilePath(filePath);
                 return DOWNLOAD_SUCCESS;
+            }else if(file.exists()){
+                file.delete();
             }
             file.createNewFile();
             filePath = file.getAbsolutePath();
@@ -112,11 +114,11 @@ public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
     @Override
     protected void onPostExecute(Integer s) {
         super.onPostExecute(s);
-
+        if(handler != null) {
+            handler.obtainMessage(DownLoadActivity.DOWNLOAD_FINISH, position ,0).sendToTarget();
+        }
         if(s.equals(DOWNLOAD_SUCCESS)) {
-            if(handler != null) {
-                handler.obtainMessage(DownLoadActivity.DOWNLOAD_FINISH, position).sendToTarget();
-            }
+
             Toast.makeText(context, context.getString(R.string.download_success), Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(context, context.getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
