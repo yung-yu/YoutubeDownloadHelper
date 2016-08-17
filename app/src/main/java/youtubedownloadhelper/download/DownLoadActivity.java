@@ -317,7 +317,9 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
     };
 
     public void downloadVideo(final int position, final Video video) {
-        final DownloadDialog downloadDialog = new DownloadDialog(context, curYoutube.getTitle()+"_"+YotubeItag.getVideoDescribe(video.getItag())
+        String fileName = curYoutube.getTitle().trim();
+        fileName = fileName.length()>15?fileName.substring(0,15):fileName;
+        final DownloadDialog downloadDialog = new DownloadDialog(context, fileName+"_"+YotubeItag.getVideoDescribe(video.getItag())
                                                         + "." + YotubeItag.getVideoType(video.getItag()));
         downloadDialog.setOnFileSelectListener(new DownloadDialog.OnFileSelectListener() {
             @Override
