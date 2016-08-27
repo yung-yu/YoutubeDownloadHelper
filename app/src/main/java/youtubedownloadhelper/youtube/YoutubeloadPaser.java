@@ -1,10 +1,8 @@
 package youtubedownloadhelper.youtube;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
-import android.util.Log;
 
 
 import org.jsoup.Jsoup;
@@ -71,7 +69,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
     @Override
     protected void onProgressUpdate(final String... values) {
         super.onProgressUpdate(values);
-        //Log.d(values[0]);
     }
 
     @Override
@@ -87,7 +84,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
 
     public  Youtube getYoutube(String reference,String youtubeId){
         String url = VIDEO_INFO_URL+youtubeId+VIDEO_INFO_PARM;
-        Log.d(TAG, "api url :"+url);
         Youtube youtube = new Youtube();
         youtube.setYoutubeUrl(reference);
         youtube.setYoutubeId(youtubeId);
@@ -106,7 +102,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
             if (connection.getResponseCode() == 200) {
 
                 Document doc = Jsoup.parse(connection.getInputStream(), "utf8", url);
-                Log.d(TAG, " url doc :"+doc);
                 String[] Parms = doc.text().split("&");
                 String url_encoded_fmt_stream_map = null;
                 ArrayList<Video> urls = new ArrayList<Video>();
@@ -121,7 +116,6 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
                             Video video = new Video();
                             String decodeU = decode(videoUrl);
                             videoUrl = getCorrectURL(decodeU);
-                            Log.d(TAG, "video url :"+videoUrl);
                             if (!videoUrl.toLowerCase().startsWith("http") && !isValid(videoUrl)) {
                                 continue;
                             }

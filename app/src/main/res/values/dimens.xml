@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="dialog_padding">20dip</dimen>
     <dimen name="dialog_item_height">40dip</dimen>
-    <dimen name="dialog_textSize">20dip</dimen>
+    <dimen name="dialog_textSize">20sp</dimen>
     <dimen name="file_back_height">40dip</dimen>
     <dimen name="file_textSize">20dip</dimen>
     <dimen name="youtube_download_page_magin">5dip</dimen>
@@ -14,4 +14,5 @@
     <dimen name="dip">1dip</dimen>
     <dimen name="progressHeight">10dip</dimen>
     <dimen name="file_name_input_height">80dip</dimen>
+    <dimen name="download_page_preview_image_height">200dp</dimen>
 </resources>

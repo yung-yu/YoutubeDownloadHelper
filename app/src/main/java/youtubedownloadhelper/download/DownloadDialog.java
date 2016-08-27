@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import youtubedownloadhelper.R;
-import youtubedownloadhelper.Preferences.sharePerferenceHelper;
+import youtubedownloadhelper.Preferences.SharePerferenceHelper;
 
 /**
  * Created by andy on 2015/2/27.
@@ -61,14 +61,6 @@ public class DownloadDialog extends AlertDialog.Builder {
         super(context);
         this.fileName = fileName;
         this.context = context;
-        setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                sharePerferenceHelper.getIntent(context).setString("path",currentFile.getAbsolutePath());
-
-            }
-        });
-
         init(context);
     }
 
@@ -86,7 +78,7 @@ public class DownloadDialog extends AlertDialog.Builder {
         setView(view);
         et_name.setText(fileName);
         iv_back.setOnClickListener(new BackEvent());
-        String path =  sharePerferenceHelper.getIntent(context).getString("path",Environment.getExternalStorageDirectory().getAbsolutePath());
+        String path =  SharePerferenceHelper.getInstance(context).getString("path",Environment.getExternalStorageDirectory().getAbsolutePath());
         updateFile(new File(path));
         bt_addDirc.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -126,7 +118,15 @@ public class DownloadDialog extends AlertDialog.Builder {
                    onFileSelectListener.onFileSelected(getCurrentFilePath());
             }
         });
-       setNegativeButton(R.string.alert_cancel, null);
+        setNegativeButton(R.string.alert_cancel, null);
+        setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                SharePerferenceHelper.getInstance(context).setString("path",currentFile.getAbsolutePath());
+
+            }
+        });
+
     }
 
     @Override
@@ -232,7 +232,7 @@ public class DownloadDialog extends AlertDialog.Builder {
         public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder vh;
             if(convertView==null){
-                vh = new ViewHolder();;
+                vh = new ViewHolder();
                 convertView = LayoutInflater.from(context).inflate(R.layout.fileitem,null);
                 vh.tv = (TextView) convertView.findViewById(R.id.textView4);
                 vh.iv = (ImageView) convertView.findViewById(R.id.imageView);

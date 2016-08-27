@@ -13,7 +13,7 @@
         <RelativeLayout
             android:id="@+id/top"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="@dimen/download_page_preview_image_height">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -32,7 +32,7 @@
                 android:gravity="center"
                 android:singleLine="true"
                 android:textColor="#fff"
-                android:textSize="18dip"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <ImageButton

@@ -2,7 +2,6 @@ package youtubedownloadhelper.download;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,9 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.IOException;
@@ -45,7 +40,7 @@ import java.util.List;
 import youtubedownloadhelper.R;
 import youtubedownloadhelper.dbinfo.Video;
 import youtubedownloadhelper.dbinfo.Youtube;
-import youtubedownloadhelper.Preferences.sharePerferenceHelper;
+import youtubedownloadhelper.Preferences.SharePerferenceHelper;
 import youtubedownloadhelper.youtube.YotubeItag;
 import youtubedownloadhelper.youtube.YoutubeloadPaser;
 
@@ -266,8 +261,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
             Video video = getItem(position);
             if (holder != null && video != null) {
                 holder.setVideo(video);
-                holder.text.setText(YotubeItag.getVideoDescribe(video.getItag())
-                        +(video.isDownlaod()?"-播放":""));
+
                 DownloadTask task = taskCache.get(position);
                 if (task != null && !task.isCancelled()) {
                     holder.bt.setVisibility(View.VISIBLE);
@@ -285,9 +279,13 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
                     });
                     holder.progressBar.setVisibility(View.VISIBLE);
                     holder.progressBar.setProgress(task.curProgress);
+                    holder.text.setText(YotubeItag.getVideoDescribe(video.getItag())
+                            +"-("+task.curProgress+"/100)");
                 } else {
                     holder.bt.setVisibility(View.GONE);
                     holder.progressBar.setVisibility(View.GONE);
+                    holder.text.setText(YotubeItag.getVideoDescribe(video.getItag())
+                            +(video.isDownlaod()?"-播放":""));
                 }
             }
             return convertView;
@@ -324,7 +322,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         downloadDialog.setOnFileSelectListener(new DownloadDialog.OnFileSelectListener() {
             @Override
             public void onFileSelected(String filePah) {
-                sharePerferenceHelper.getIntent(context).setString("path", filePah);
+                SharePerferenceHelper.getInstance(context).setString("path", filePah);
                 DownloadTask task = new DownloadTask(DownLoadActivity.this, handler, position);
                 downloadAdapter.putDownloadCache(position, task);
                 task.execute(video, filePah, downloadDialog.getCurrentFileName());

@@ -6,19 +6,19 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 
-public class sharePerferenceHelper {
+public class SharePerferenceHelper {
 
 	static SharedPreferences mSharedPreferences;
-	static sharePerferenceHelper msharePerferenceHelper;
+	static SharePerferenceHelper instance;
 
-    public sharePerferenceHelper(Context mContext){
+    public SharePerferenceHelper(Context mContext){
 		if(mSharedPreferences==null)
 			mSharedPreferences=mContext.getSharedPreferences("ebook", Context.MODE_PRIVATE);  
 	}
-	public static sharePerferenceHelper getIntent(Context mContext){
+	public static SharePerferenceHelper getInstance(Context mContext){
 		if(mSharedPreferences==null)
-			msharePerferenceHelper=new sharePerferenceHelper(mContext);
-		return msharePerferenceHelper;
+			instance =new SharePerferenceHelper(mContext);
+		return instance;
 	}
 	@SuppressLint("CommitPrefEdits")
 	public void clear(){

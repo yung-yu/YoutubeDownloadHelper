@@ -15,14 +15,11 @@ import java.net.URLConnection;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import youtubedownloadhelper.R;
 
 import youtubedownloadhelper.dbinfo.Video;
-import youtubedownloadhelper.youtube.YotubeItag;
 
 public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
     private final static String TAG = "DownloadTask";
@@ -75,7 +72,7 @@ public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
             byte data[] = new byte[1024];
             long total = 0;
             onProgressUpdate(0);
-            while ((count = input.read(data)) != -1) {
+            while ((count = input.read(data)) != -1 && !isCancelled()) {
                 total += count;
 
                 onProgressUpdate((int) ((total * 100) / lenghtOfFile));
@@ -91,8 +88,17 @@ public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
                 file.delete();
             }
             return DOWNLOAD_FAIL;
+        }finally {
+            if(isCancelled()){
+                File file = new File((String)params[1],(String)params[2]);
+                if(file.exists()){
+                    file.delete();
+                }
+            }else {
+                video.setLocalFilePath(filePath);
+            }
         }
-        video.setLocalFilePath(filePath);
+
         return DOWNLOAD_SUCCESS;
     }
 
@@ -103,7 +109,6 @@ public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
         final int progressIndex = progress[0];
         if(curProgress !=progressIndex) {
             curProgress = progressIndex;
-            Log.d(TAG, "download progress :"+curProgress);
             if(handler != null) {
                 handler.sendEmptyMessage(DownLoadActivity.NOTFTY_ADAPTER);
             }
