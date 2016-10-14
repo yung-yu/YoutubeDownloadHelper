@@ -8,8 +8,8 @@ android {
         applicationId "andy.youtubedownloadhelper"
         minSdkVersion 11
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        versionCode 201
+        versionName "2.1"
     }
     buildTypes {
         release {
