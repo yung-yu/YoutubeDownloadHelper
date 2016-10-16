@@ -151,7 +151,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         }
         return null;
     }
-    public String getVideoId(String reference){
+    public static String getVideoId(String reference){
         String videoId = null;
 
         if(reference.startsWith("https://www.youtube.com/watch?v=")){

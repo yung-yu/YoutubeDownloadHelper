@@ -31,6 +31,8 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.android.support:appcompat-v7:23.1.1'
-
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile files('libs/jave-1.0.2.jar')
+    compile files('libs/YouTubeAndroidPlayerApi.jar')
+    compile 'com.android.support:design:24.2.1'
 }

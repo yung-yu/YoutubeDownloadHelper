@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity
         uninstall = (Button) findViewById(R.id.uninstall);
         download.setOnClickListener(this);
         uninstall.setOnClickListener(this);
+
     }
 
     @Override

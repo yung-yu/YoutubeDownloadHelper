@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Youtube下載器</string>
     <string name="share_name">Youtube下載</string>
+    <string name="live_name">Youtube live </string>
     <string name="action_play_All">播放全部</string>
     <string name="download_wait">下載中...</string>
     <string name="download_fail">下載失敗</string>
