@@ -11,12 +11,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 /**
@@ -36,7 +39,11 @@ public class LiveVideoManager {
     private Context context;
     private WebView webView;
     private WindowManager mWindowManager;
-
+    private ImageButton move ;
+    private ImageButton close ;
+    private ImageButton small ;
+    private RelativeLayout tools;
+    private Button zoom ;
     static String videoId = "";
 
     public static String getVideoId() {
@@ -108,8 +115,8 @@ public class LiveVideoManager {
     View.OnTouchListener OnZoomListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            WindowManager.LayoutParams prm = prms;
-            if(prm == null){
+            WindowManager.LayoutParams parm = prms;
+            if(parm == null){
                 return true;
             }
 
@@ -125,13 +132,13 @@ public class LiveVideoManager {
                     int width = (int) event.getRawX()-point[0];
                     int height = (int) event.getRawY()-point[1];
 
-                    if (width >= context.getResources().getDisplayMetrics().widthPixels/5 && width < context.getResources().getDisplayMetrics().widthPixels
-                            && height >= context.getResources().getDisplayMetrics().heightPixels/5 && height < context.getResources().getDisplayMetrics().heightPixels) {
+                    if (width >= 300 && height >= 300) {
                         if (event.getPointerCount() == 1) {
-                            prm.width = width;
-                            prm.height = height;
+                            parm.width = width;
+                            parm.height = height;
+                            mWindowManager.updateViewLayout(view, parm);
                             touchconsumedbyZoom = true;
-                            mWindowManager.updateViewLayout(view, prm);
+
                         }
                         else{
                             touchconsumedbyZoom = false;
@@ -146,6 +153,8 @@ public class LiveVideoManager {
             return touchconsumedbyZoom;
         }
     };
+    private boolean isHidden = false;
+    private int curHeight = 0;
     public void open(String videoId){
         if(view != null || TextUtils.isEmpty(videoId))
             return;
@@ -155,25 +164,34 @@ public class LiveVideoManager {
         prms.flags = WindowManager.LayoutParams.FORMAT_CHANGED;
         prms.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         prms.gravity = Gravity.CENTER |Gravity.TOP;
-        prms.width =  context.getResources().getDisplayMetrics().widthPixels/3;
-        prms.height =  context.getResources().getDisplayMetrics().heightPixels/3;
+        prms.width = 300;
+        prms.height = 300;
         LayoutInflater LayoutInflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
          view =LayoutInflater.inflate(R.layout.window_live_player, null);
         mWindowManager.addView(view, prms);
-        Button move = (Button)view.findViewById(R.id.move);
-        Button close = (Button)view.findViewById(R.id.close);
-        Button small = (Button)view.findViewById(R.id.small);
-        Button zoom = (Button)view.findViewById(R.id.zoom);
+        move = (ImageButton)view.findViewById(R.id.move);
+        close = (ImageButton)view.findViewById(R.id.close);
+        small = (ImageButton)view.findViewById(R.id.small);
+        tools = (RelativeLayout) view.findViewById(R.id.tools);
+        zoom = (Button) view.findViewById(R.id.zoom);
         zoom.setOnTouchListener(OnZoomListener);
         small.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View v) {
-                if(webView.getVisibility() == View.VISIBLE){
+                if(!isHidden){
+                    isHidden = true;
                     webView.setVisibility(View.GONE);
+                    zoom.setVisibility(View.GONE);
+                    curHeight = prms.height;
+                    prms.height = tools.getHeight();
+                    mWindowManager.updateViewLayout(view, prms);
                 }else{
+                    isHidden = false;
                     webView.setVisibility(View.VISIBLE);
+                    zoom.setVisibility(View.VISIBLE);
+                    prms.height = curHeight;
+                    mWindowManager.updateViewLayout(view, prms);
                 }
             }
         });
@@ -189,7 +207,6 @@ public class LiveVideoManager {
         webView.setPadding(0, 0, 0, 0);
         webView.setBackgroundColor(Color.TRANSPARENT);
         WebSettings webSettings = webView.getSettings();
-        webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
