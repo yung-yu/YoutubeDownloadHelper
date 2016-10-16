@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,7 +46,8 @@ public class LiveVideoManager {
     private RelativeLayout tools;
     private Button zoom ;
     static String videoId = "";
-
+    private static final int MIN_WIDTH = 450;
+    private static final int MIN_HEIGHT = 360;
     public static String getVideoId() {
         return videoId;
     }
@@ -132,13 +134,12 @@ public class LiveVideoManager {
                     int width = (int) event.getRawX()-point[0];
                     int height = (int) event.getRawY()-point[1];
 
-                    if (width >= 300 && height >= 300) {
+                    if (width >= MIN_WIDTH && height >= MIN_HEIGHT) {
                         if (event.getPointerCount() == 1) {
                             parm.width = width;
                             parm.height = height;
                             mWindowManager.updateViewLayout(view, parm);
                             touchconsumedbyZoom = true;
-
                         }
                         else{
                             touchconsumedbyZoom = false;
@@ -153,6 +154,7 @@ public class LiveVideoManager {
             return touchconsumedbyZoom;
         }
     };
+
     private boolean isHidden = false;
     private int curHeight = 0;
     public void open(String videoId){
@@ -164,8 +166,8 @@ public class LiveVideoManager {
         prms.flags = WindowManager.LayoutParams.FORMAT_CHANGED;
         prms.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         prms.gravity = Gravity.CENTER |Gravity.TOP;
-        prms.width = 300;
-        prms.height = 300;
+        prms.width = MIN_WIDTH;
+        prms.height = MIN_HEIGHT;
         LayoutInflater LayoutInflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
          view =LayoutInflater.inflate(R.layout.window_live_player, null);
