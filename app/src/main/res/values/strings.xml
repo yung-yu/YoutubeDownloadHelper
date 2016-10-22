@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Youtube輔助工具</string>
-    <string name="share_name">Download</string>
-    <string name="live_name"> Play</string>
+    <string name="share_name">下載</string>
+    <string name="live_name">播放</string>
     <string name="action_play_All">播放全部</string>
     <string name="download_wait">下載中...</string>
     <string name="download_fail">下載失敗</string>
@@ -21,5 +21,5 @@
     <string name="uninstall_msg">感謝您的使用!</string>
     <string name="play_video">播放</string>
     <string name="cancel_dowwnload">取消</string>
-    <string name="YOUTUBE_API_KEY">AIzaSyAEe-vUvSeCW12cCvYu-B5HO7hhiH_aooY</string>
+    <string name="pls_input_legal_videoId">請輸入合法的youtube Id</string>
 </resources>

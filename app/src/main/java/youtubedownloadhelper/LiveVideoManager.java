@@ -85,14 +85,12 @@ public class LiveVideoManager {
             switch(event.getActionMasked())
             {
                 case MotionEvent.ACTION_DOWN:
-                    webView.onPause();
                     recButtonLastX = (int) event.getRawX();
                     recButtonLastY = (int) event.getRawY();
                     recButtonFirstX = recButtonLastX;
                     recButtonFirstY = recButtonLastY;
                     break;
                 case MotionEvent.ACTION_UP:
-                    webView.onResume();
                     break;
                 case MotionEvent.ACTION_MOVE:
 
@@ -132,10 +130,8 @@ public class LiveVideoManager {
             switch(event.getActionMasked())
             {
                 case MotionEvent.ACTION_DOWN:
-                    webView.onPause();
                     break;
                 case MotionEvent.ACTION_UP:
-                    webView.onResume();
                     break;
                 case MotionEvent.ACTION_MOVE:
                     int[] point = new int[2];
@@ -176,8 +172,10 @@ public class LiveVideoManager {
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         prms = new WindowManager.LayoutParams();
         prms.format = PixelFormat.TRANSLUCENT;
-        prms.flags = WindowManager.LayoutParams.FORMAT_CHANGED;
-        prms.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        prms.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+        prms.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
         prms.gravity = Gravity.CENTER |Gravity.TOP;
         prms.width = MIN_WIDTH;
         prms.height = MIN_HEIGHT;
@@ -199,7 +197,7 @@ public class LiveVideoManager {
                     webView.setVisibility(View.GONE);
                     zoom.setVisibility(View.GONE);
                     curHeight = prms.height;
-                    prms.height = tools.getHeight()+20;
+                    prms.height = tools.getHeight()+25;
                     mWindowManager.updateViewLayout(view, prms);
                 }else{
                     isHidden = false;
@@ -229,9 +227,8 @@ public class LiveVideoManager {
         webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setNeedInitialFocus(true);
         webView.setWebChromeClient(new WebChromeClient());
 
         String html = "";

@@ -123,7 +123,6 @@ public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
             handler.obtainMessage(DownLoadActivity.DOWNLOAD_FINISH, position ,0).sendToTarget();
         }
         if(s.equals(DOWNLOAD_SUCCESS)) {
-
             Toast.makeText(context, context.getString(R.string.download_success), Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(context, context.getString(R.string.download_fail), Toast.LENGTH_SHORT).show();

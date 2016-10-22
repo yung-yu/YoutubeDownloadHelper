@@ -20,15 +20,15 @@ public class ImageManager {
     public ImageManager(Context context) {
         imageLoader = ImageLoader.getInstance();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .memoryCacheExtraOptions(480, 800) //即保存的每个缓存文件的最大长宽
-                .threadPriority(Thread.NORM_PRIORITY - 2) //线程池中线程的个数
-                .denyCacheImageMultipleSizesInMemory() //禁止缓存多张图片
-                .memoryCache(new LRULimitedMemoryCache(50 * 1024 * 1024)) //缓存策略
-                .memoryCacheSize(50 * 1024 * 1024) //设置内存缓存的大小
-                .diskCacheFileNameGenerator(new Md5FileNameGenerator()) //缓存文件名的保存方式
-                .diskCacheSize(200 * 1024 * 1024) //磁盘缓存大小
-                .tasksProcessingOrder(QueueProcessingType.LIFO) //工作队列
-                .diskCacheFileCount(200) //缓存的文件数量
+                .memoryCacheExtraOptions(480, 800)
+                .threadPriority(Thread.NORM_PRIORITY - 2)
+                .denyCacheImageMultipleSizesInMemory()
+                .memoryCache(new LRULimitedMemoryCache(50 * 1024 * 1024))
+                .memoryCacheSize(50 * 1024 * 1024)
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+                .diskCacheSize(200 * 1024 * 1024)
+                .tasksProcessingOrder(QueueProcessingType.LIFO)
+                .diskCacheFileCount(200)
                 .build();
         imageLoader.init(ImageLoaderConfiguration.createDefault(context));
     }

@@ -11,15 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
 
 import youtubedownloadhelper.download.DownLoadActivity;
 
 
-public class MainActivity extends YouTubeBaseActivity
+public class MainActivity extends AppCompatActivity
         implements View.OnClickListener {
 
     EditText editText;
@@ -39,9 +35,6 @@ public class MainActivity extends YouTubeBaseActivity
         download.setOnClickListener(this);
         uninstall.setOnClickListener(this);
         playButton.setOnClickListener(this);
-
-        editText.setText("YW3e51bkRcw");
-
     }
 
     @Override
@@ -86,7 +79,7 @@ public class MainActivity extends YouTubeBaseActivity
             it.setClass(this, DownLoadActivity.class);
             startActivity(it);
         }else{
-            Toast.makeText(this, "請輸入合法的youtube Id", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.pls_input_legal_videoId, Toast.LENGTH_SHORT).show();
         }
     }
     private void play() {
@@ -97,7 +90,7 @@ public class MainActivity extends YouTubeBaseActivity
             it.setClass(this, LiveActivity.class);
             startActivity(it);
         }else{
-            Toast.makeText(this, "請輸入合法的youtube Id", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,  R.string.pls_input_legal_videoId, Toast.LENGTH_SHORT).show();
         }
     }
 }
