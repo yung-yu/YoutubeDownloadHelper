@@ -27,8 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -42,7 +40,7 @@ import youtubedownloadhelper.dbinfo.Video;
 import youtubedownloadhelper.dbinfo.Youtube;
 import youtubedownloadhelper.Preferences.SharePerferenceHelper;
 import youtubedownloadhelper.youtube.YotubeItag;
-import youtubedownloadhelper.youtube.YoutubeloadPaser;
+import youtubedownloadhelper.youtube.YoutubePaserTask;
 
 /**
  * Created by andy on 2015/3/8.
@@ -99,7 +97,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         if (!TextUtils.isEmpty(sharedText)) {
             download_page.setVisibility(View.GONE);
             loading_Page.setVisibility(View.VISIBLE);
-            new YoutubeloadPaser(this, new YoutubeloadPaser.CallBack() {
+            new YoutubePaserTask(this, new YoutubePaserTask.CallBack() {
                 @Override
                 public void success(Youtube youtube) {
                     download_page.setVisibility(View.VISIBLE);

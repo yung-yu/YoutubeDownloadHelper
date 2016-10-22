@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    app:cardBackgroundColor="@android:color/white"
+    app:cardBackgroundColor="#c6ffffff"
     app:cardCornerRadius="5dp"
     app:contentPadding="5dp">
 
@@ -24,7 +24,6 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_close"
                 android:background="@null"
-                android:layout_marginRight="10dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />

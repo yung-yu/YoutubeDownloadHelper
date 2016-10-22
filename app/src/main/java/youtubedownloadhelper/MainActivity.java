@@ -11,15 +11,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
+
 import youtubedownloadhelper.download.DownLoadActivity;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends YouTubeBaseActivity
         implements View.OnClickListener {
 
     EditText editText;
     Button download;
     Button uninstall;
+    private Button playButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +35,12 @@ public class MainActivity extends AppCompatActivity
         editText = (EditText) findViewById(R.id.editText);
         download = (Button) findViewById(R.id.download);
         uninstall = (Button) findViewById(R.id.uninstall);
+        playButton = (Button) findViewById(R.id.play);
         download.setOnClickListener(this);
         uninstall.setOnClickListener(this);
+        playButton.setOnClickListener(this);
+
+        editText.setText("YW3e51bkRcw");
 
     }
 
@@ -56,6 +67,8 @@ public class MainActivity extends AppCompatActivity
             download();
         } else if (v.getId() == R.id.uninstall) {
             unistall();
+        } else if (v.getId() == R.id.play) {
+            play();
         }
     }
 
@@ -71,6 +84,17 @@ public class MainActivity extends AppCompatActivity
             Intent it = new Intent();
             it.putExtra(DownLoadActivity.BUNDLE_KEY_YOUTUBE_ID, youtubeId);
             it.setClass(this, DownLoadActivity.class);
+            startActivity(it);
+        }else{
+            Toast.makeText(this, "請輸入合法的youtube Id", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void play() {
+        String youtubeId = editText.getText().toString();
+        if (!TextUtils.isEmpty(youtubeId)) {
+            Intent it = new Intent();
+            it.putExtra(LiveActivity.BUNDLE_KEY_YOUTUBE_ID, youtubeId);
+            it.setClass(this, LiveActivity.class);
             startActivity(it);
         }else{
             Toast.makeText(this, "請輸入合法的youtube Id", Toast.LENGTH_SHORT).show();

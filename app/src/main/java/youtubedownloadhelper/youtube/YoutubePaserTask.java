@@ -22,8 +22,8 @@ import youtubedownloadhelper.dbinfo.Youtube;
 /**
  * Created by andy on 2015/3/8.
  */
-public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
-    private final static String TAG = "YoutubeloadPaser";
+public class YoutubePaserTask extends AsyncTask<String, String, Youtube> {
+    private final static String TAG = "YoutubePaserTask";
     public static final String VIDEO_INFO_URL = "http://www.youtube.com/get_video_info?video_id=";
     public static final String VIDEO_INFO_PARM = "&=3&el=detailpage&hl=en_US";
     public static final ArrayList<String> BAD_KEYS = new ArrayList<String>();
@@ -42,7 +42,7 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
 
     Context context;
     CallBack callBack;
-    public YoutubeloadPaser(Context context, CallBack callBack){
+    public YoutubePaserTask(Context context, CallBack callBack){
 
         this.context = context;
         this.callBack = callBack;
@@ -91,9 +91,9 @@ public class YoutubeloadPaser extends AsyncTask<String, String, Youtube> {
         try {
             URL  mUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) mUrl.openConnection();
-            connection.setReadTimeout(10000);
-            connection.setConnectTimeout(5000);
-            connection.setRequestMethod("POST");
+            connection.setReadTimeout(15000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("GET");
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.connect();

@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.view.WindowManager;
 
 /**
@@ -12,12 +13,21 @@ import android.view.WindowManager;
 public class LiveService extends Service {
     private final static String TAG = "LiveService";
     private  Context context;
+    public static final String INTENT_VIDEO_ID = "INTENT_VIDEO_ID";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        LiveVideoManager.getInstance(this).open(LiveVideoManager.videoId);
 
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        String videoId = intent.getStringExtra(INTENT_VIDEO_ID);
+        if(!TextUtils.isEmpty(videoId)) {
+            LiveVideoManager.getInstance(this).open(videoId);
+        }
+        return START_NOT_STICKY;
     }
 
     @Override

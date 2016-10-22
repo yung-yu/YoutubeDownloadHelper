@@ -23,6 +23,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import java.util.HashMap;
+
 /**
  * Created by andyli on 2016/8/27.
  */
@@ -68,6 +70,7 @@ public class LiveVideoManager {
     int recButtonFirstY;
     WindowManager.LayoutParams  prms;
     View view;
+    private HashMap<String,View>  cache = new HashMap<>();
 
     View.OnTouchListener OnTouchListener = new View.OnTouchListener() {
         @Override
@@ -82,14 +85,17 @@ public class LiveVideoManager {
             switch(event.getActionMasked())
             {
                 case MotionEvent.ACTION_DOWN:
+                    webView.onPause();
                     recButtonLastX = (int) event.getRawX();
                     recButtonLastY = (int) event.getRawY();
                     recButtonFirstX = recButtonLastX;
                     recButtonFirstY = recButtonLastY;
                     break;
                 case MotionEvent.ACTION_UP:
+                    webView.onResume();
                     break;
                 case MotionEvent.ACTION_MOVE:
+
                     int deltaX = (int) event.getRawX() - recButtonLastX;
                     int deltaY = (int) event.getRawY() - recButtonLastY;
                     recButtonLastX = (int) event.getRawX();
@@ -115,6 +121,7 @@ public class LiveVideoManager {
         }
     };
     View.OnTouchListener OnZoomListener = new View.OnTouchListener() {
+
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             WindowManager.LayoutParams parm = prms;
@@ -125,8 +132,10 @@ public class LiveVideoManager {
             switch(event.getActionMasked())
             {
                 case MotionEvent.ACTION_DOWN:
+                    webView.onPause();
                     break;
                 case MotionEvent.ACTION_UP:
+                    webView.onResume();
                     break;
                 case MotionEvent.ACTION_MOVE:
                     int[] point = new int[2];
@@ -158,8 +167,12 @@ public class LiveVideoManager {
     private boolean isHidden = false;
     private int curHeight = 0;
     public void open(String videoId){
-        if(view != null || TextUtils.isEmpty(videoId))
+        if(TextUtils.isEmpty(videoId)){
             return;
+        }
+        if(view != null){
+            close();
+        }
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         prms = new WindowManager.LayoutParams();
         prms.format = PixelFormat.TRANSLUCENT;
@@ -170,7 +183,7 @@ public class LiveVideoManager {
         prms.height = MIN_HEIGHT;
         LayoutInflater LayoutInflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-         view =LayoutInflater.inflate(R.layout.window_live_player, null);
+        view = LayoutInflater.inflate(R.layout.window_live_player, null);
         mWindowManager.addView(view, prms);
         move = (ImageButton)view.findViewById(R.id.move);
         close = (ImageButton)view.findViewById(R.id.close);
@@ -186,7 +199,7 @@ public class LiveVideoManager {
                     webView.setVisibility(View.GONE);
                     zoom.setVisibility(View.GONE);
                     curHeight = prms.height;
-                    prms.height = tools.getHeight();
+                    prms.height = tools.getHeight()+20;
                     mWindowManager.updateViewLayout(view, prms);
                 }else{
                     isHidden = false;
@@ -208,30 +221,35 @@ public class LiveVideoManager {
         webView = (WebView) view.findViewById(R.id.webview);
         webView.setPadding(0, 0, 0, 0);
         webView.setBackgroundColor(Color.TRANSPARENT);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setAllowFileAccess(true);
+        webView.getSettings().setAppCacheEnabled(true);
         WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setNeedInitialFocus(true);
         webView.setWebChromeClient(new WebChromeClient());
 
         String html = "";
-        html += "<html><body style=\"body ,iframe {\n" +
+        html += "<html>" +
+                "<body style=\"body ,iframe {\n" +
                 "   margin: 0;\n" +
                 "   padding: 0;\n" +
                 "\"}>";
-        html += "<iframe width=\"560\" height=\"315\"  src=\"https://www.youtube.com/embed/"+videoId+"\" frameborder=\"0\" allowfullscreen></iframe>";
+        html += "<iframe width=\"450\" height=\"360\"  src=\"https://www.youtube.com/embed/"+videoId+"\" frameborder=\"0\" allowfullscreen></iframe>";
         html += "</body></html>";
         webView.loadData(html, "text/html", "utf-8");
-
-
     }
 
     public void close(){
         if(mWindowManager != null && view != null){
             mWindowManager.removeView(view);
             if(webView != null){
+                webView.clearCache(true);
                 webView.destroy();
             }
             view = null;
