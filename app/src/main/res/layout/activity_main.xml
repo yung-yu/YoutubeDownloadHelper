@@ -41,15 +41,6 @@
             android:layout_centerHorizontal="true"
             android:layout_weight="1" />
 
-        <Button
-            android:text="播放"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/editText"
-            android:layout_toRightOf="@+id/download"
-            android:layout_toEndOf="@+id/download"
-            android:id="@+id/play"
-            android:layout_weight="1" />
     </LinearLayout>
 
     <EditText

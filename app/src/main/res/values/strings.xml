@@ -22,4 +22,7 @@
     <string name="play_video">播放</string>
     <string name="cancel_dowwnload">取消</string>
     <string name="pls_input_legal_videoId">請輸入合法的youtube Id</string>
+    <string name="playing_video">播放影片中</string>
+    <string name="Youtube_vidoeo">Youtube 影片</string>
+    <string name="mp3_success">mp3轉換成功,是否要播放.</string>
 </resources>

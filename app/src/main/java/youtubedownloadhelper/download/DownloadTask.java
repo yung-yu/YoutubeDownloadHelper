@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.widget.Toast;
@@ -23,14 +24,14 @@ import youtubedownloadhelper.dbinfo.Video;
 
 public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
     private final static String TAG = "DownloadTask";
-    private Activity context = null;
+    private Context context = null;
     public final Integer DOWNLOAD_SUCCESS = 0;
     public final Integer DOWNLOAD_FAIL = 1;
     private Handler handler;
     public int curProgress = 0;
     private int position;
 
-    public DownloadTask(Activity c , Handler handler,int position){
+    public DownloadTask(Context c , Handler handler,int position){
         this.context = c;
         this.handler = handler;
         this.position = position;

@@ -16,6 +16,12 @@
             android:layout_height="@dimen/download_page_preview_image_height">
 
             <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/refresh"
+                android:id="@+id/reload"/>
+
+            <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

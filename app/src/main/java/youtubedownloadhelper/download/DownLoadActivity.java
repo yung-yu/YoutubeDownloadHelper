@@ -1,7 +1,10 @@
 package youtubedownloadhelper.download;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -40,6 +44,7 @@ import youtubedownloadhelper.R;
 import youtubedownloadhelper.dbinfo.Video;
 import youtubedownloadhelper.dbinfo.Youtube;
 import youtubedownloadhelper.Preferences.SharePerferenceHelper;
+import youtubedownloadhelper.mp3.Mp3Helper;
 import youtubedownloadhelper.youtube.YotubeItag;
 import youtubedownloadhelper.youtube.YoutubePaserTask;
 
@@ -59,16 +64,21 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
     private DownloadAdapter downloadAdapter;
     private LinearLayout download_page;
     private RelativeLayout loading_Page;
+    private ProgressDialog mProgressDialog;
+    private String curVideoId;
+    private ImageView reload;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mp3Helper.getInstance().init(this);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.download);
         context = this;
         tv_title = (TextView) findViewById(R.id.textView);
         iv_title = (ImageView) findViewById(R.id.imageView);
+        reload = (ImageView) findViewById(R.id.reload);
         listView = (ListView) findViewById(R.id.listview);
         download_page = (LinearLayout) findViewById(R.id.download_page);
         loading_Page = (RelativeLayout) findViewById(R.id.loading_Page);
@@ -76,6 +86,17 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
             @Override
             public void onClick(View view) {
                 DownLoadActivity.this.finish();
+            }
+        });
+        reload.setEnabled(false);
+        reload.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                if(!TextUtils.isEmpty(curVideoId)) {
+                    reload.setEnabled(false);
+                    youtubeParser(curVideoId);
+                }
             }
         });
         downloadAdapter = new DownloadAdapter(this);
@@ -86,18 +107,21 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         String type = intent.getType();
         Bundle bd = intent.getExtras();
         if (type != null && action != null && type.equals("text/plain") && Intent.ACTION_SEND.equals(action)) {
-            handleSendText(intent); // Handle text being sent
+            curVideoId = intent.getStringExtra(Intent.EXTRA_TEXT);
+            youtubeParser(curVideoId);
         } else if (bd != null) {
             if (bd.containsKey(BUNDLE_KEY_YOUTUBE_ID)) {
-                youtubePaser(bd.getString(BUNDLE_KEY_YOUTUBE_ID));
+                curVideoId = intent.getStringExtra(Intent.EXTRA_TEXT);
+                youtubeParser(curVideoId);
             }
         }
     }
 
-    public void youtubePaser(String sharedText) {
+    public void youtubeParser(String sharedText) {
         if (!TextUtils.isEmpty(sharedText)) {
             download_page.setVisibility(View.GONE);
             loading_Page.setVisibility(View.VISIBLE);
+
             new YoutubePaserTask(this, new YoutubePaserTask.CallBack() {
                 @Override
                 public void success(Youtube youtube) {
@@ -107,6 +131,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
                     tv_title.setText(curYoutube.getTitle());
                     displayImageUrl(iv_title, curYoutube.getImgeUrl());
                     showDownloadList(curYoutube.getVideoList());
+                    reload.setEnabled(true);
                 }
 
                 @Override
@@ -120,10 +145,6 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         }
     }
 
-    public void handleSendText(Intent intent) {
-        youtubePaser(intent.getStringExtra(Intent.EXTRA_TEXT));
-
-    }
 
     private void displayImageUrl(final ImageView iv, final String imageUrl) {
         new Thread(new Runnable() {
@@ -185,8 +206,11 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
 
     }
 
+
+
     public class MyViewHolder {
         Button bt;
+        ImageView mp3Button;
         ProgressBar progressBar;
         Video video;
         TextView text;
@@ -195,6 +219,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
             bt = (Button) itemView.findViewById(R.id.button);
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
             text = (TextView) itemView.findViewById(R.id.text);
+            mp3Button = (ImageView) itemView.findViewById(R.id.mp3button);
         }
 
         public Video getVideo() {
@@ -244,7 +269,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             MyViewHolder holder;
             if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.downloaditem, null);
@@ -254,12 +279,14 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
                 holder = (MyViewHolder) convertView.getTag();
             }
             Video video = getItem(position);
+            holder.mp3Button.setVisibility(View.GONE);
             if (holder != null && video != null) {
                 holder.setVideo(video);
 
                 DownloadTask task = taskCache.get(position);
                 if (task != null && !task.isCancelled()) {
                     holder.bt.setVisibility(View.VISIBLE);
+
                     holder.bt.setTag(task);
                     holder.bt.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -281,6 +308,73 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
                     holder.progressBar.setVisibility(View.GONE);
                     holder.text.setText(YotubeItag.getVideoDescribe(video.getItag())
                             +(video.isDownlaod()?"-播放":""));
+                    if(video.isDownlaod()) {
+                        holder.mp3Button.setVisibility(View.VISIBLE);
+                        holder.mp3Button.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                final Video video = downloadAdapter.getItem(position);
+                                final File file = new File(video.getLocalFilePath());
+
+                                final DownloadDialog downloadDialog = new DownloadDialog(context, file.getName() + ".mp3");
+                                downloadDialog.setOnFileSelectListener(new DownloadDialog.OnFileSelectListener() {
+                                    @Override
+                                    public void onFileSelected(final String filePah) {
+                                        Mp3Helper.getInstance().covertToMp3(DownLoadActivity.this, file.getPath(), filePah + "/" + downloadDialog.getCurrentFileName(), new Mp3Helper.OnCovertListener() {
+                                            @Override
+                                            public void onStart() {
+                                                if (mProgressDialog == null) {
+                                                    mProgressDialog = new ProgressDialog(DownLoadActivity.this);
+                                                    mProgressDialog.setMessage("mp3轉換中...");
+                                                }
+                                                mProgressDialog.show();
+
+                                            }
+
+                                            @Override
+                                            public void onSuccess() {
+                                                if (mProgressDialog != null) {
+                                                    mProgressDialog.dismiss();
+                                                }
+                                                new AlertDialog.Builder(DownLoadActivity.this)
+                                                        .setMessage(R.string.mp3_success)
+                                                        .setPositiveButton(R.string.Alert_ok, new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                playMusic(filePah + "/" + downloadDialog.getCurrentFileName());
+                                                                dialog.cancel();
+                                                            }
+                                                        })
+                                                        .setNegativeButton(R.string.alert_cancel, null)
+                                                        .create().show();
+
+
+                                            }
+
+                                            @Override
+                                            public void onFailed() {
+                                                if (mProgressDialog != null) {
+                                                    mProgressDialog.dismiss();
+                                                }
+
+                                            }
+
+                                            @Override
+                                            public void onProgress(String msg) {
+                                                if (mProgressDialog != null) {
+                                                    mProgressDialog.setMessage(msg);
+                                                }
+                                            }
+
+                                        });
+                                    }
+                                });
+                                downloadDialog.create().show();
+                            }
+                        });
+                    }
+
                 }
             }
             return convertView;
@@ -291,7 +385,7 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
 
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
                 case NOTFTY_ADAPTER:
@@ -301,9 +395,13 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
                     break;
                 case DOWNLOAD_FINISH:
                     if(downloadAdapter != null){
+                         Video video = downloadAdapter.getItem(msg.arg1);
                         downloadAdapter.removeDownloadCache(msg.arg1);
                         downloadAdapter.notifyDataSetChanged();
+
+
                     }
+
                     break;
             }
         }
@@ -332,5 +430,10 @@ public class DownLoadActivity extends Activity implements AdapterView.OnItemClic
         intent.setDataAndType(contentUri, "video/mp4");
         context.startActivity(intent);
     }
-
+    public void playMusic(String filePath) {
+        Uri contentUri = Uri.parse(filePath);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(contentUri, "audio/*");
+        context.startActivity(intent);
+    }
 }

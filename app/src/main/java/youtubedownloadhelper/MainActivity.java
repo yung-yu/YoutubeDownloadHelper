@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity
     EditText editText;
     Button download;
     Button uninstall;
-    private Button playButton;
 
 
     @Override
@@ -31,10 +30,8 @@ public class MainActivity extends AppCompatActivity
         editText = (EditText) findViewById(R.id.editText);
         download = (Button) findViewById(R.id.download);
         uninstall = (Button) findViewById(R.id.uninstall);
-        playButton = (Button) findViewById(R.id.play);
         download.setOnClickListener(this);
         uninstall.setOnClickListener(this);
-        playButton.setOnClickListener(this);
     }
 
     @Override
@@ -60,8 +57,6 @@ public class MainActivity extends AppCompatActivity
             download();
         } else if (v.getId() == R.id.uninstall) {
             unistall();
-        } else if (v.getId() == R.id.play) {
-            play();
         }
     }
 
@@ -82,15 +77,5 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, R.string.pls_input_legal_videoId, Toast.LENGTH_SHORT).show();
         }
     }
-    private void play() {
-        String youtubeId = editText.getText().toString();
-        if (!TextUtils.isEmpty(youtubeId)) {
-            Intent it = new Intent();
-            it.putExtra(LiveActivity.BUNDLE_KEY_YOUTUBE_ID, youtubeId);
-            it.setClass(this, LiveActivity.class);
-            startActivity(it);
-        }else{
-            Toast.makeText(this,  R.string.pls_input_legal_videoId, Toast.LENGTH_SHORT).show();
-        }
-    }
+
 }

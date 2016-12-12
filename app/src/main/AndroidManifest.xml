@@ -39,19 +39,6 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <service android:name=".LiveService" />
-        <activity android:name=".LiveActivity"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/live_name"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@style/DialogActivityStyle">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
