@@ -17,12 +17,12 @@
         <TextView
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:text="New Text"
+            android:layout_weight="6"
             android:id="@+id/textView4"
             android:textSize="@dimen/file_textSize"
             android:textColor="@android:color/black"
-            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="middle"
             android:gravity="center|left" />
     </LinearLayout>
 </RelativeLayout>

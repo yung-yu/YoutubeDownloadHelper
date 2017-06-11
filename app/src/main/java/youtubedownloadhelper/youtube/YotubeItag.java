@@ -41,11 +41,11 @@ public class YotubeItag {
             case 5:
             case 34:
             case 35:
-                type = "FLV";
+                type = "flv";
                 break;
             case 17:
             case 36:
-                type = "3GP";
+                type = "3gp";
                 break;
             case 18:
             case 22:
@@ -64,7 +64,7 @@ public class YotubeItag {
             case 140:
             case 141:
             case 160:
-                type = "MP4";
+                type = "mp4";
                 break;
             case 43:
             case 44:
@@ -73,7 +73,7 @@ public class YotubeItag {
             case 100:
             case 101:
             case 102:
-                type = "WEB";
+                type = "web";
                 break;
         }
         return type;

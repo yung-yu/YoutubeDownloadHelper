@@ -1,4 +1,4 @@
-package youtubedownloadhelper.utils;
+package youtubedownloadhelper.manager;
 
 import android.content.Context;
 import android.widget.ImageView;
@@ -41,10 +41,6 @@ public class ImageManager {
         return imageManager;
     }
 
-    public void displayImage(ImageView iv,String url){
-        displayImage(iv,url,R.drawable.youtube35);
-
-    }
     public void displayImage(ImageView iv,String url,int defautIcon){
         imageLoader.displayImage(url, iv);
 

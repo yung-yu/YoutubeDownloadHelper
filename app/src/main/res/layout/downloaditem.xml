@@ -40,7 +40,7 @@
         android:id="@+id/mp3button"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:src="@drawable/mp3_icon"
+        android:src="@drawable/mp3"
         android:visibility="gone" />
     <Button
         android:id="@+id/button"

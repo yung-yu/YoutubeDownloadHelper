@@ -15,11 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/download_page_preview_image_height">
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/refresh"
-                android:id="@+id/reload"/>
+
 
             <ImageView
                 android:id="@+id/imageView"
@@ -48,11 +44,17 @@
                 android:layout_gravity="center_horizontal"
                 android:background="@null"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:text="結束"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
 
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reload"
+                android:background="@null"
+                android:src="@drawable/reload"
+                android:id="@+id/reload"/>
         </RelativeLayout>
 
 
@@ -74,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"/>
 
         <TextView
             android:id="@+id/textView6"
@@ -82,9 +84,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/progressBar2"
             android:layout_centerHorizontal="true"
-            android:text="loading..."
+            android:text="@string/analysis"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"/>
 
     </RelativeLayout>
 </FrameLayout>

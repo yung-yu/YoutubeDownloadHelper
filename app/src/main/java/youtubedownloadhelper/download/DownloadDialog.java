@@ -38,6 +38,10 @@ public class DownloadDialog extends AlertDialog.Builder {
     private FileAdapter fileAdapter;
     private String fileName;
     private Context context;
+    private File currentFile;
+
+    private  List<File> fileList = new ArrayList<File>();
+    private OnFileSelectListener onFileSelectListener;
 
     public interface OnFileSelectListener{
         void onFileSelected(String filePah);
@@ -49,9 +53,7 @@ public class DownloadDialog extends AlertDialog.Builder {
     public String getCurrentFileName(){
         return et_name.getText().toString();
     }
-    private File currentFile ;
-    private  List<File> fileList = new ArrayList<File>();
-    private OnFileSelectListener onFileSelectListener;
+
 
     public void setOnFileSelectListener(OnFileSelectListener onFileSelectListener) {
         this.onFileSelectListener = onFileSelectListener;
@@ -66,7 +68,7 @@ public class DownloadDialog extends AlertDialog.Builder {
 
 
     public void init(final Context context){
-        View view = LayoutInflater.from(context).inflate(R.layout.choosedirctorydialog,null);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_file_selecter,null);
         bt_addDirc = (ImageView) view.findViewById(R.id.button2);
         listview = (ListView) view.findViewById(R.id.listView2);
         iv_back = (ImageView) view.findViewById(R.id.imageView3);
@@ -79,7 +81,8 @@ public class DownloadDialog extends AlertDialog.Builder {
         et_name.setText(fileName);
         iv_back.setOnClickListener(new BackEvent());
         String path =  SharePerferenceHelper.getInstance(context).getString("path",Environment.getExternalStorageDirectory().getAbsolutePath());
-        updateFile(new File(path));
+        String curPath = fileAdapter.updateFileAndreturnCurPath(new File(path));
+        tv_path.setText(curPath);
         bt_addDirc.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -89,14 +92,15 @@ public class DownloadDialog extends AlertDialog.Builder {
                 et.setTextColor(Color.BLUE);
                 et.setGravity(Gravity.CENTER);
                 et.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
-                et.setText("新資料夾");
+                et.setText(R.string.new_dir);
                 ab.setView(et);
                 ab.setPositiveButton(R.string.alert_ok,new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String dirName = et.getText().toString();
                         if(createNewDir(currentFile.getAbsolutePath(),dirName)){
-                            updateFile(new File(currentFile.getAbsolutePath(),dirName));
+                            String curPath = fileAdapter.updateFileAndreturnCurPath(new File(currentFile.getAbsolutePath(),dirName));
+                            tv_path.setText(curPath);
                         }
                         dialog.cancel();
                     }
@@ -111,7 +115,7 @@ public class DownloadDialog extends AlertDialog.Builder {
                 ab.create().show();
             }
         });
-        setPositiveButton(R.string.alert_download, new DialogInterface.OnClickListener() {
+        setPositiveButton(R.string.Alert_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                if(onFileSelectListener != null)
@@ -129,6 +133,7 @@ public class DownloadDialog extends AlertDialog.Builder {
 
     }
 
+
     @Override
     public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
         return null;
@@ -139,7 +144,7 @@ public class DownloadDialog extends AlertDialog.Builder {
         return null;
     }
 
-    public  boolean createNewDir(String dstPath, String dirName){
+    private  boolean createNewDir(String dstPath, String dirName){
         File desfile = new File(dstPath);
         String[] filelist = desfile.list();
         int count=0;
@@ -160,45 +165,23 @@ public class DownloadDialog extends AlertDialog.Builder {
         return false;
     }
 
-    public void updateFile(File file){
 
-        fileList.clear();
-        if(file.exists()&&file.isDirectory()){
-            currentFile = file;
-        }else{
-            currentFile = Environment.getExternalStorageDirectory();
-        }
-        tv_path.setText(currentFile.getAbsolutePath());
-        File[] dirs = file.listFiles();
-        if(dirs!=null)
-            for(File item : dirs){
-                if(item.canRead()&&item.canWrite()&&!item.getName().startsWith("."))
-                    fileList.add(item);
-            }
-        Collections.sort(fileList ,new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                int index1 = lhs.isDirectory()?0:1;
-                int index2 = rhs.isDirectory()?0:1;
-                return index1 - index2;
-            }
-        });
-        fileAdapter.notifyDataSetChanged();
-    }
-    public class BackEvent implements View.OnClickListener{
+    private class BackEvent implements View.OnClickListener{
         @Override
         public void onClick(View v) {
             if(currentFile!=null) {
                 if(currentFile.getParent()!=null){
-                        updateFile(new File(currentFile.getParent()));
+                    fileAdapter.updateFileAndreturnCurPath(new File(currentFile.getParent()));
                 }
 
             }
         }
     }
-    private class FileAdapter extends BaseAdapter {
-        List<File> data;
-        Context context;
+
+     private class FileAdapter extends BaseAdapter {
+        private List<File> data;
+        private Context context;
+
         public FileAdapter(Context context, List<File> objects) {
             data = objects;
             this.context = context;
@@ -246,21 +229,21 @@ public class DownloadDialog extends AlertDialog.Builder {
             vh.tv.setText(file.getName());
             vh.iv.setVisibility(file.isDirectory()?View.VISIBLE:View.INVISIBLE);
             convertView.setOnClickListener(new View.OnClickListener(){
-                   @Override
-                   public void onClick(View v) {
-                       File f = data.get(position);
-                       if(f.isDirectory()){
-                           updateFile(f);
-                       }
-                   }
-               }
+                                               @Override
+                                               public void onClick(View v) {
+                                                   File f = data.get(position);
+                                                   if(f.isDirectory()){
+                                                       updateFileAndreturnCurPath(f);
+                                                   }
+                                               }
+                                           }
             );
             convertView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
 
                     new AlertDialog.Builder(context)
-                            .setTitle("是否要刪除?")
+                            .setTitle(R.string.delete_tip)
                             .setNegativeButton(R.string.alert_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -268,7 +251,7 @@ public class DownloadDialog extends AlertDialog.Builder {
                                     if(f.exists()){
                                         f.delete();
                                     }
-                                    updateFile(currentFile);
+                                    updateFileAndreturnCurPath(currentFile);
                                 }
                             })
                             .setPositiveButton(R.string.alert_cancel,null)
@@ -278,5 +261,34 @@ public class DownloadDialog extends AlertDialog.Builder {
             });
             return convertView;
         }
+
+        private String updateFileAndreturnCurPath(File file){
+
+            data.clear();
+            if(file.exists()&&file.isDirectory()){
+                currentFile = file;
+            }else{
+                currentFile = Environment.getExternalStorageDirectory();
+            }
+            File[] dirs = file.listFiles();
+            if(dirs!=null)
+                for(File item : dirs){
+                    if(item.canRead()&&item.canWrite()&&!item.getName().startsWith("."))
+                        data.add(item);
+                }
+            Collections.sort(data ,new Comparator<File>() {
+                @Override
+                public int compare(File lhs, File rhs) {
+                    int index1 = lhs.isDirectory()?0:1;
+                    int index2 = rhs.isDirectory()?0:1;
+                    return index1 - index2;
+                }
+            });
+            notifyDataSetChanged();
+            return  currentFile.getAbsolutePath();
+        }
+
+
     }
+
 }

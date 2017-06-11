@@ -16,8 +16,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import youtubedownloadhelper.dbinfo.Video;
-import youtubedownloadhelper.dbinfo.Youtube;
+import youtubedownloadhelper.object.Video;
+import youtubedownloadhelper.object.Youtube;
 
 /**
  * Created by andy on 2015/3/8.
@@ -126,8 +126,8 @@ public class YoutubePaserTask extends AsyncTask<String, String, Youtube> {
                             String type = YotubeItag.getVideoType(itag);
                             String videoType = YotubeItag.getVideoDescribe(itag);
                             video.setItag(itag);
-                            if(type!=null&&videoType!=null&&!type.equals("WEB")&&!type.equals("FLV")
-                                    &&!(videoUrl.isEmpty()||type.isEmpty()||videoType.isEmpty()||itag.equals("-1"))) {
+                            if(type!=null&&videoType!=null&&
+                                    !(videoUrl.isEmpty()||type.isEmpty()||videoType.isEmpty()||itag.equals("-1"))) {
                                 urls.add(video);
                             }
 
@@ -173,7 +173,7 @@ public class YoutubePaserTask extends AsyncTask<String, String, Youtube> {
     public boolean isValid(String url) {
         return url.contains("signature=") && url.contains("factor=");
     }
-    public  String decode(String s) {
+    private  String decode(String s) {
         try {
             return URLDecoder.decode(s, "utf8");
         } catch (UnsupportedEncodingException e) {

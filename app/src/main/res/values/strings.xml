@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Youtube輔助工具</string>
+    <string name="app_name">Youtube分享下載</string>
     <string name="share_name">下載</string>
     <string name="live_name">播放</string>
     <string name="action_play_All">播放全部</string>
@@ -25,4 +25,12 @@
     <string name="playing_video">播放影片中</string>
     <string name="Youtube_vidoeo">Youtube 影片</string>
     <string name="mp3_success">mp3轉換成功,是否要播放.</string>
+    <string name="converting_mp3">mp3轉換中...</string>
+    <string name="new_dir">新資料夾</string>
+    <string name="delete_tip">是否要刪除?</string>
+    <string name="convert_mp3_failed">mp3轉換失敗</string>
+    <string name="source_file_not_found">來源檔案不存在</string>
+    <string name="end">結束</string>
+    <string name="reload">重載</string>
+    <string name="analysis">分析中...</string>
 </resources>

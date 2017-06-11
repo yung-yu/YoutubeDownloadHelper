@@ -12,7 +12,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -20,7 +19,7 @@ import android.widget.Toast;
 
 import youtubedownloadhelper.R;
 
-import youtubedownloadhelper.dbinfo.Video;
+import youtubedownloadhelper.object.Video;
 
 public class DownloadTask extends AsyncTask<Object, Integer, Integer> {
     private final static String TAG = "DownloadTask";

@@ -6,7 +6,7 @@
     <dimen name="dialog_item_height">40dip</dimen>
     <dimen name="dialog_textSize">20sp</dimen>
     <dimen name="file_back_height">40dip</dimen>
-    <dimen name="file_textSize">20dip</dimen>
+    <dimen name="file_textSize">16sp</dimen>
     <dimen name="youtube_download_page_magin">5dip</dimen>
     <dimen name="youtube_imageview_width">150dip</dimen>
     <dimen name="youtub_imageview_height">150dip</dimen>

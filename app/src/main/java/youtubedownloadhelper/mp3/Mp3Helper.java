@@ -9,6 +9,10 @@ import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
 
+import java.io.File;
+
+import youtubedownloadhelper.R;
+
 
 /**
  * Created by andyli on 2016/12/11.
@@ -26,8 +30,8 @@ public class Mp3Helper {
 	}
     public interface OnCovertListener{
 		 void onStart();
-		 void onSuccess();
-		 void onFailed();
+		 void onSuccess(String path);
+		 void onFailed(String msg);
 		 void onProgress(String msg);
 	}
 
@@ -61,14 +65,25 @@ public class Mp3Helper {
 
 
 
-	public FFmpeg covertToMp3(Context context, String  source, String target, final OnCovertListener listener){
+	public FFmpeg covertToMp3(final Context context, String  source, final String target, final OnCovertListener listener){
 		String[] cmd = {
 		 "-i",
 	     source,
 		 target
 		};
 		FFmpeg ffmpeg = FFmpeg.getInstance(context);
+		int talSize = 0;
+
 		try {
+			final File file = new File(source);
+			if(!file.exists()|| file.length() == 0){
+				if(listener != null){
+					listener.onFailed(context.getString(R.string.source_file_not_found));
+				}
+				return null;
+			} else {
+				talSize = (int) file.length();
+			}
 			// to execute "ffmpeg -version" command you just need to pass "-version"
 			ffmpeg.execute(cmd, new ExecuteBinaryResponseHandler() {
 
@@ -81,7 +96,7 @@ public class Mp3Helper {
 
 				@Override
 				public void onProgress(String message) {
-					Log.e(TAG, message);
+					Log.i(TAG, message);
 					if(listener != null){
 						listener.onProgress(message);
 					}
@@ -91,7 +106,7 @@ public class Mp3Helper {
 				public void onFailure(String message) {
 					Log.e(TAG, message);
 					if(listener != null){
-						listener.onFailed();
+						listener.onFailed(context.getString(R.string.convert_mp3_failed));
 					}
 
 				}
@@ -100,7 +115,7 @@ public class Mp3Helper {
 				public void onSuccess(String message) {
 					Log.e(TAG, message);
 					if(listener != null){
-						listener.onSuccess();
+						listener.onSuccess(target);
 					}
 				}
 

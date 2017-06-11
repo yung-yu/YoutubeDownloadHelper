@@ -7,13 +7,13 @@ import android.content.SharedPreferences.Editor;
 
 
 public class SharePerferenceHelper {
-
+    private static final String FIRST_INSTALL = "FIRST_INSTALL";
 	static SharedPreferences mSharedPreferences;
 	static SharePerferenceHelper instance;
 
     public SharePerferenceHelper(Context mContext){
 		if(mSharedPreferences==null)
-			mSharedPreferences=mContext.getSharedPreferences("ebook", Context.MODE_PRIVATE);  
+			mSharedPreferences=mContext.getSharedPreferences("youtube", Context.MODE_PRIVATE);
 	}
 	public static SharePerferenceHelper getInstance(Context mContext){
 		if(mSharedPreferences==null)
@@ -62,8 +62,9 @@ public class SharePerferenceHelper {
 		return false;
 	}
 	public  boolean getboolean(String key,boolean def){
-		if(mSharedPreferences!=null)
+		if(mSharedPreferences!=null) {
 			return mSharedPreferences.getBoolean(key, def);
+		}
 		return def;
 	}
 	public  boolean setboolean(String key,boolean value){
@@ -71,6 +72,14 @@ public class SharePerferenceHelper {
 		if(mEditor!=null){
 			mEditor.putBoolean(key, value);
 			mEditor.commit();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isFirstIntstall(){
+		if(getboolean(FIRST_INSTALL, true)){
+			setboolean(FIRST_INSTALL, false);
 			return true;
 		}
 		return false;

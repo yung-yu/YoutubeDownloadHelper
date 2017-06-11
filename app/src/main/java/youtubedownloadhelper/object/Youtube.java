@@ -1,4 +1,4 @@
-package youtubedownloadhelper.dbinfo;
+package youtubedownloadhelper.object;
 
 
 import android.database.Cursor;
