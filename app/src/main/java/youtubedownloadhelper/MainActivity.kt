@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 		uninstall = findViewById(R.id.uninstall) as Button
 		download.setOnClickListener(this)
 		uninstall.setOnClickListener(this)
+		editText.setText("jiZOPmvUlY0")
 	}
 
 	override fun onResume() {

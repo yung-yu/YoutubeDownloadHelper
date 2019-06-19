@@ -105,7 +105,7 @@ class DownLoadActivity : Activity(), AdapterView.OnItemClickListener {
 			youtubeParser(curVideoId)
 		} else if (bd != null) {
 			if (bd.containsKey(BUNDLE_KEY_YOUTUBE_ID)) {
-				curVideoId = intent.getStringExtra(Intent.EXTRA_TEXT)
+				curVideoId = intent.getStringExtra(BUNDLE_KEY_YOUTUBE_ID)
 				youtubeParser(curVideoId)
 			}
 		}

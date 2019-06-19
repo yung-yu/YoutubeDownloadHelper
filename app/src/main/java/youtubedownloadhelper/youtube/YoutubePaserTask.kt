@@ -3,6 +3,7 @@ package youtubedownloadhelper.youtube
 import android.content.Context
 import android.os.AsyncTask
 import android.text.TextUtils
+import android.util.Log
 
 
 import org.jsoup.Jsoup
@@ -22,6 +23,7 @@ import youtubedownloadhelper.`object`.Youtube
  * Created by andy on 2015/3/8.
  */
 class YoutubePaserTask(internal var context: Context, internal var callBack: CallBack?) : AsyncTask<String, String, Youtube>() {
+
 	interface CallBack {
 		fun success(youtube: Youtube)
 		fun onfail(Message: String)
@@ -51,6 +53,7 @@ class YoutubePaserTask(internal var context: Context, internal var callBack: Cal
 		val reference = params[0]
 
 		val youtubeId = getVideoId(reference)
+		Log.d(TAG, "youtube id $youtubeId")
 		return if (TextUtils.isEmpty(youtubeId)) null else getYoutube(reference, youtubeId)
 
 	}
@@ -60,7 +63,7 @@ class YoutubePaserTask(internal var context: Context, internal var callBack: Cal
 		val youtube = Youtube()
 		youtube.youtubeUrl = reference
 		youtube.youtubeId = youtubeId
-
+		Log.d(TAG, "url $url")
 		try {
 			val mUrl = URL(url)
 			val connection = mUrl.openConnection() as HttpURLConnection
@@ -72,9 +75,11 @@ class YoutubePaserTask(internal var context: Context, internal var callBack: Cal
 			connection.connect()
 
 			val response = ""
+			Log.d(TAG, "$connection.responseCode")
 			if (connection.responseCode == 200) {
 
 				val doc = Jsoup.parse(connection.inputStream, "utf8", url)
+				Log.d(TAG, "rep ${doc.text()}")
 				val Parms = doc.text().split("&".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
 				val url_encoded_fmt_stream_map: String? = null
 				val urls = ArrayList<Video>()
@@ -89,7 +94,8 @@ class YoutubePaserTask(internal var context: Context, internal var callBack: Cal
 							val video = Video()
 							val decodeU = decode(url)
 							val videoUrl = getCorrectURL(decodeU!!)
-							if (!videoUrl.toLowerCase().startsWith("http") && !isValid(videoUrl)) {
+							Log.d(TAG, " video $videoUrl")
+							if (!(videoUrl.toLowerCase().startsWith("http") && videoUrl.toLowerCase().startsWith("https"))&& !isValid(videoUrl)) {
 								continue
 							}
 
@@ -111,7 +117,7 @@ class YoutubePaserTask(internal var context: Context, internal var callBack: Cal
 					}
 				}
 				youtube.title = title
-				thumbnail_url = "http://img.youtube.com/vi/$youtubeId/0.jpg"
+				thumbnail_url = "https://img.youtube.com/vi/$youtubeId/0.jpg"
 				youtube.imgeUrl = thumbnail_url
 				if (urls.size == 0) {
 					return null
@@ -203,7 +209,7 @@ class YoutubePaserTask(internal var context: Context, internal var callBack: Cal
 
 	companion object {
 		private val TAG = "YoutubePaserTask"
-		val VIDEO_INFO_URL = "http://www.youtube.com/get_video_info?video_id="
+		val VIDEO_INFO_URL = "https://www.youtube.com/get_video_info?video_id="
 		val VIDEO_INFO_PARM = "&=3&el=detailpage&hl=en_US"
 		val BAD_KEYS = ArrayList<String>()
 

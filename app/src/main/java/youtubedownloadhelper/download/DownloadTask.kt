@@ -15,17 +15,20 @@ import java.net.URLConnection
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 
 import youtubedownloadhelper.R
 
 import youtubedownloadhelper.`object`.Video
+import java.net.HttpURLConnection
 
 class DownloadTask(c: Context, private val handler: Handler?, private val position: Int) : AsyncTask<Any, Int, Int>() {
 	private var context: Context? = null
 	val DOWNLOAD_SUCCESS = 0
 	val DOWNLOAD_FAIL = 1
 	var curProgress = 0
+
 
 	init {
 		this.context = c
@@ -45,10 +48,12 @@ class DownloadTask(c: Context, private val handler: Handler?, private val positi
 		val video = params[0] as Video
 		try {
 			val url = URL(video.videoUrl)
-			val conection = url.openConnection()
+			val conection = url.openConnection() as HttpURLConnection
 			conection.connect()
-			val lenghtOfFile = conection.contentLength
 
+			val lenghtOfFile = conection.contentLength
+			Log.d(TAG, "${conection.responseCode}")
+			Log.d(TAG, "${conection.responseMessage}")
 			val input = BufferedInputStream(url.openStream(), 8192)
 
 			val file = File(params[1] as String, params[2] as String)
